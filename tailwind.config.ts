@@ -1,92 +1,129 @@
-import type { Config } from "tailwindcss"
+import type { Config } from "tailwindcss";
 
-const config = {
-	darkMode: ["class"],
-	content: [
-		'./pages/**/*.{ts,tsx}',
-		'./components/**/*.{ts,tsx}',
-		'./app/**/*.{ts,tsx}',
-		'./src/**/*.{ts,tsx}',
-	],
-	prefix: "",
-	theme: {
-		container: {
-			center: true,
-			padding: '2rem',
-			screens: {
-				'2xl': '1400px'
-			}
-		},
-		extend: {
-			colors: {
-				border: 'hsl(var(--border))',
-				input: 'hsl(var(--input))',
-				ring: 'hsl(var(--ring))',
-				background: 'hsl(var(--background))',
-				foreground: 'hsl(var(--foreground))',
-				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
-				},
-				secondary: {
-					DEFAULT: 'hsl(var(--secondary))',
-					foreground: 'hsl(var(--secondary-foreground))'
-				},
-				destructive: {
-					DEFAULT: 'hsl(var(--destructive))',
-					foreground: 'hsl(var(--destructive-foreground))'
-				},
-				muted: {
-					DEFAULT: 'hsl(var(--muted))',
-					foreground: 'hsl(var(--muted-foreground))'
-				},
-				accent: {
-					DEFAULT: 'hsl(var(--accent))',
-					foreground: 'hsl(var(--accent-foreground))'
-				},
-				popover: {
-					DEFAULT: 'hsl(var(--popover))',
-					foreground: 'hsl(var(--popover-foreground))'
-				},
-				card: {
-					DEFAULT: 'hsl(var(--card))',
-					foreground: 'hsl(var(--card-foreground))'
-				}
-			},
-			borderRadius: {
-				lg: 'var(--radius)',
-				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
-			},
-			keyframes: {
-				'accordion-down': {
-					from: {
-						height: '0'
-					},
-					to: {
-						height: 'var(--radix-accordion-content-height)'
-					}
-				},
-				'accordion-up': {
-					from: {
-						height: 'var(--radix-accordion-content-height)'
-					},
-					to: {
-						height: '0'
-					}
-				}
-			},
-			animation: {
-				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
-			},
-			backgroundImage: {
-				'grid-pattern': "url('/grid.svg')",
-				'grid-pattern-light': "url('/grid-light.svg')"
-			}
-		}
-	},
-	plugins: [require("tailwindcss-animate")],
-} satisfies Config
+const config: Config = {
+  darkMode: ["class"],
+  content: [
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: [
+          "Sequel Sans Display Book",
+          "Sequel Sans Display Book Placeholder",
+          "-apple-system",
+          "system-ui",
+          "Segoe UI",
+          "Roboto",
+          "Helvetica Neue",
+          "Arial",
+          "sans-serif",
+        ],
+      },
+      fontSize: {
+        "2xs": ["0.625rem", { lineHeight: "0.75rem" }], // 10px
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
+      colors: {
+        // Light theme base colors
+        background: "#ffffff",
+        foreground: "#1a1a1a",
+        card: {
+          DEFAULT: "#ffffff",
+          foreground: "#1a1a1a",
+        },
+        popover: {
+          DEFAULT: "#ffffff",
+          foreground: "#1a1a1a",
+        },
+        primary: {
+          DEFAULT: "#CD66FB",
+          foreground: "#ffffff",
+          50: "#f9f2fe",
+          100: "#f4e6fd",
+          200: "#e9cffd",
+          300: "#dbb7fc",
+          400: "#cd9ffb",
+          500: "#CD66FB",
+          600: "#c147fa",
+          700: "#b22cf9",
+          800: "#a21cf8",
+          900: "#8a10f7",
+        },
+        secondary: {
+          DEFAULT: "#f8fafc",
+          foreground: "#475569",
+        },
+        muted: {
+          DEFAULT: "#f1f5f9",
+          foreground: "#64748b",
+        },
+        accent: {
+          DEFAULT: "#f1f5f9",
+          foreground: "#1e293b",
+        },
+        destructive: {
+          DEFAULT: "#ef4444",
+          foreground: "#ffffff",
+        },
+        border: "#e2e8f0",
+        input: "#e2e8f0",
+        ring: "#CD66FB",
+        chart: {
+          "1": "#CD66FB",
+          "2": "#06b6d4",
+          "3": "#10b981",
+          "4": "#f59e0b",
+          "5": "#ef4444",
+        },
+        // Success, warning, error colors
+        success: {
+          DEFAULT: "#10b981",
+          foreground: "#ffffff",
+          light: "#d1fae5",
+        },
+        warning: {
+          DEFAULT: "#f59e0b",
+          foreground: "#ffffff",
+          light: "#fef3c7",
+        },
+        error: {
+          DEFAULT: "#ef4444",
+          foreground: "#ffffff",
+          light: "#fee2e2",
+        },
+        // Neutral grays for light theme
+        gray: {
+          50: "#f9fafb",
+          100: "#f3f4f6",
+          200: "#e5e7eb",
+          300: "#d1d5db",
+          400: "#9ca3af",
+          500: "#6b7280",
+          600: "#4b5563",
+          700: "#374151",
+          800: "#1f2937",
+          900: "#111827",
+        },
+      },
+      screens: {
+        xs: "480px",
+      },
+      spacing: {
+        "safe-top": "env(safe-area-inset-top)",
+        "safe-bottom": "env(safe-area-inset-bottom)",
+        "safe-left": "env(safe-area-inset-left)",
+        "safe-right": "env(safe-area-inset-right)",
+      },
+    },
+  },
+  plugins: [require("tailwindcss-animate")],
+};
 
-export default config
+export default config;

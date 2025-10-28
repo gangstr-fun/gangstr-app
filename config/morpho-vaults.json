@@ -1,0 +1,213 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2024-01-20T00:00:00Z",
+  "description": "Morpho vault configuration for Gangstr",
+  "chains": {
+    "base-8453": {
+      "name": "Base",
+      "shortName": "base",
+      "rpcUrl": "https://mainnet.base.org",
+      "explorerUrl": "https://basescan.org",
+      "nativeCurrency": {
+        "name": "Ethereum",
+        "symbol": "ETH",
+        "decimals": 18
+      },
+      "tokens": {
+        "USDC": {
+          "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "decimals": 6,
+          "symbol": "USDC",
+          "name": "USD Coin",
+          "category": "stablecoin",
+          "riskLevel": 1,
+          "vaults": [
+            {
+              "address": "0x23479229e52Ab6aaD312D0B03DF9F33B46753B5e",
+              "name": "ExtraFi XLend USDC Vault",
+              "symbol": "USDC",
+              "description": "ExtraFi XLend USDC Vault for yield optimization",
+              "isWhitelisted": true,
+              "isActive": true,
+              "minTvl": 100000,
+              "riskScore": 25,
+              "category": "lending",
+              "curator": "ExtraFi",
+              "fee": 0.1,
+              "maxAllocation": 30,
+              "tags": ["stable", "lending"]
+            },
+            {
+              "address": "0xc1256Ae5FF1cf2719D4937adb3bbCCab2E00A2Ca",
+              "name": "Moonwell Flagship USDC Vault",
+              "symbol": "USDC",
+              "description": "Moonwell Flagship USDC Vault for stable yields",
+              "isWhitelisted": true,
+              "isActive": true,
+              "minTvl": 500000,
+              "riskScore": 20,
+              "category": "lending",
+              "curator": "Moonwell",
+              "fee": 0.1,
+              "maxAllocation": 40,
+              "tags": ["stable", "flagship"]
+            },
+            {
+              "address": "0x616a4E1db48e22028f6bbf20444Cd3b8e3273738",
+              "name": "Seamless USDC Vault",
+              "symbol": "USDC",
+              "description": "Seamless USDC Vault for optimized lending",
+              "isWhitelisted": true,
+              "isActive": true,
+              "minTvl": 200000,
+              "riskScore": 22,
+              "category": "lending",
+              "curator": "Seamless",
+              "fee": 0.1,
+              "maxAllocation": 35,
+              "tags": ["stable", "optimized"]
+            },
+            {
+              "address": "0xeE8F4eC5672F09119b96Ab6fB59C27E1b7e44b61",
+              "name": "Gauntlet USDC Prime Vault",
+              "symbol": "USDC",
+              "description": "Gauntlet USDC Prime Vault with risk management",
+              "isWhitelisted": true,
+              "isActive": true,
+              "minTvl": 1000000,
+              "riskScore": 18,
+              "category": "prime",
+              "curator": "Gauntlet",
+              "fee": 0.15,
+              "maxAllocation": 50,
+              "tags": ["prime", "risk-managed"]
+            },
+            {
+              "address": "0xbeeF010f9cb27031ad51e3333f9aF9C6B1228183",
+              "name": "Steakhouse USDC Vault",
+              "symbol": "USDC",
+              "description": "Steakhouse USDC Vault for institutional yields",
+              "isWhitelisted": true,
+              "isActive": true,
+              "minTvl": 300000,
+              "riskScore": 24,
+              "category": "institutional",
+              "curator": "Steakhouse",
+              "fee": 0.12,
+              "maxAllocation": 35,
+              "tags": ["institutional", "stable"]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "selectionCriteria": {
+    "default": {
+      "minTvlUsd": 100000,
+      "minApyPercent": 1.0,
+      "maxRiskScore": 50,
+      "requireWhitelisted": true,
+      "maxVaultAllocation": 50,
+      "preferredVaultCount": 3,
+      "maxVaultCount": 5,
+      "minInvestmentUsd": 10,
+      "rebalanceThreshold": 0.05
+    },
+    "conservative": {
+      "minTvlUsd": 500000,
+      "minApyPercent": 2.0,
+      "maxRiskScore": 25,
+      "requireWhitelisted": true,
+      "maxVaultAllocation": 30,
+      "preferredVaultCount": 2,
+      "maxVaultCount": 3,
+      "minInvestmentUsd": 50,
+      "rebalanceThreshold": 0.03
+    },
+    "moderate": {
+      "minTvlUsd": 200000,
+      "minApyPercent": 3.0,
+      "maxRiskScore": 35,
+      "requireWhitelisted": true,
+      "maxVaultAllocation": 40,
+      "preferredVaultCount": 3,
+      "maxVaultCount": 5,
+      "minInvestmentUsd": 25,
+      "rebalanceThreshold": 0.05
+    },
+    "aggressive": {
+      "minTvlUsd": 100000,
+      "minApyPercent": 4.0,
+      "maxRiskScore": 50,
+      "requireWhitelisted": false,
+      "maxVaultAllocation": 60,
+      "preferredVaultCount": 5,
+      "maxVaultCount": 8,
+      "minInvestmentUsd": 10,
+      "rebalanceThreshold": 0.08
+    }
+  },
+  "rebalancing": {
+    "schedule": {
+      "frequency": "daily",
+      "time": "02:00",
+      "timezone": "UTC",
+      "enabled": true
+    },
+    "triggers": {
+      "performanceDrift": 0.05,
+      "allocationDrift": 0.1,
+      "newBestVault": true,
+      "vaultDeactivation": true
+    },
+    "constraints": {
+      "minRebalanceAmount": 10,
+      "maxGasPrice": 50,
+      "maxSlippage": 0.01,
+      "cooldownPeriod": 3600
+    }
+  },
+  "monitoring": {
+    "healthChecks": {
+      "vaultAvailability": true,
+      "priceFeeds": true,
+      "gasPrice": true,
+      "networkConnectivity": true
+    },
+    "alerts": {
+      "vaultDeactivation": true,
+      "highGasPrice": true,
+      "investmentFailure": true,
+      "rebalanceFailure": true,
+      "lowTvl": true
+    },
+    "thresholds": {
+      "maxGasPrice": 100,
+      "minTvlAlert": 50000,
+      "maxFailureRate": 0.05
+    }
+  },
+  "security": {
+    "maxDailyInvestment": 100000,
+    "maxUserInvestment": 50000,
+    "emergencyPause": false,
+    "adminAddresses": [],
+    "pauseReasons": [],
+    "lastSecurityReview": "2024-01-20T00:00:00Z"
+  },
+  "metadata": {
+    "configVersion": "1.0.0",
+    "schemaVersion": "1.0.0",
+    "maintainer": "Gangstr Team",
+    "lastAudit": "2024-01-20T00:00:00Z",
+    "nextReview": "2024-04-20T00:00:00Z",
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2024-01-20T00:00:00Z",
+        "changes": ["Initial configuration with Base USDC vaults"]
+      }
+    ]
+  }
+}

@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,19 +7,384 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id            String    @id @default(cuid())
-  walletAddress String    @unique
-  createdAt     DateTime  @default(now())
-  lastLoginAt   DateTime? @updatedAt
-
-   // User profile information
-  username     String?   @unique
-  avatar       String?   // IPFS hash or URL
-  bio          String?
-  NFTid      String?
-
-  @@index([walletAddress])
+  id            String        @id @default(uuid())
+  walletAddress String        @unique
+  username      String?
+  email         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  preferences   Json?
+  agents        Agent[]
+  portfolios    Portfolio[]
+  strategies    Strategy[]
+  transactions  Transaction[]
 }
 
+model Portfolio {
+  id                String        @id @default(uuid())
+  name              String
+  description       String?
+  userId            String
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  totalValue        Float         @default(0)
+  profitLoss        Float         @default(0)
+  profitLossPercent Float         @default(0)
+  riskScore         Int           @default(50)
+  assets            Asset[]
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions      Transaction[]
+}
+
+model Asset {
+  id              String        @id @default(uuid())
+  portfolioId     String
+  symbol          String
+  name            String
+  tokenAddress    String?
+  chain           String
+  quantity        Float
+  currentValue    Float
+  costBasis       Float
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  lastPriceUpdate DateTime      @default(now())
+  allocation      Float         @default(0)
+  performance1d   Float         @default(0)
+  performance7d   Float         @default(0)
+  performance30d  Float         @default(0)
+  portfolio       Portfolio     @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  transactions    Transaction[]
+}
+
+model Strategy {
+  id             String   @id @default(uuid())
+  name           String
+  description    String?
+  type           String
+  riskLevel      String
+  expectedReturn Float?
+  timeHorizon    String?
+  userId         String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  isActive       Boolean  @default(true)
+  metadata       Json?
+  agents         Agent[]
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Agent {
+  id               String    @id @default(uuid())
+  name             String
+  type             String
+  description      String?
+  userId           String
+  strategyId       String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  isActive         Boolean   @default(true)
+  lastRun          DateTime?
+  configuration    Json
+  performanceScore Float?
+  strategy         Strategy? @relation(fields: [strategyId], references: [id])
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Transaction {
+  id          String    @id @default(uuid())
+  userId      String
+  portfolioId String
+  assetId     String?
+  type        String
+  amount      Float
+  price       Float?
+  totalValue  Float
+  date        DateTime  @default(now())
+  status      String    @default("COMPLETED")
+  hash        String?
+  chain       String?
+  metadata    Json?
+  asset       Asset?    @relation(fields: [assetId], references: [id])
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Research {
+  id            String   @id @default(uuid())
+  title         String
+  description   String?
+  content       String
+  category      String
+  tags          String[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  source        String?
+  sentiment     String?
+  relatedAssets String[]
+}
+
+model PerformanceMetric {
+  id            String   @id @default(uuid())
+  entityId      String
+  entityType    String
+  date          DateTime
+  value         Float
+  change        Float
+  changePercent Float
+  metadata      Json?
+  createdAt     DateTime @default(now())
+
+  @@unique([entityId, entityType, date])
+}
+
+model RiskAssessment {
+  id             String   @id @default(uuid())
+  entityId       String
+  entityType     String
+  score          Int
+  factors        Json
+  date           DateTime @default(now())
+  recommendation String?
+}
+
+model AgentWalletMap {
+  agent_id          String   @id @unique
+  userWalletAddress String   @unique
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model AgentWallet {
+  agent_id           String   @id @unique
+  walletPrivateKey   String
+  walletPublicKey    String
+  smartWalletAddress String?  // Coinbase smart wallet address (created on-chain)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model AgentSession {
+  session_id       String   @id @unique
+  agent_scratchpad String   @default("")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model UserProfile {
+  userWalletAddress   String    @id @unique
+  risk_profile        String    @default("")
+  other_user_info     String    @default("")
+  basicWalletId       String?
+  proWalletId         String?
+  basicWalletAddress  String?   // EOA address from BasicAgentWallet
+  proWalletAddress    String?   // Smart wallet address from CDP
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+}
+
+model BasicAgentWallet {
+  id                   String    @id @default(uuid())
+  userWalletAddress    String    @unique
+  agentWalletAddress   String    @unique
+  encryptedPrivateKey  String
+  encryptionSalt       String
+  walletType           String    @default("basic")
+  status               String    @default("active")
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  lastUsedAt           DateTime?
+
+  @@index([userWalletAddress])
+  @@index([agentWalletAddress])
+  @@index([status])
+}
+
+model WalletUsageStats {
+  id                  String    @id @default(uuid())
+  walletId            String
+  walletType          String
+  transactionCount    Int       @default(0)
+  totalGasUsed        Decimal   @default(0) @db.Decimal(20, 8)
+  totalVolumeUsd      Decimal   @default(0) @db.Decimal(20, 2)
+  lastTransactionAt   DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([walletId])
+  @@index([walletType])
+}
+
+// Morpho Vault Models
+model MorphoVault {
+  id              String          @id @default(uuid())
+  address         String          @unique
+  chainId         Int
+  name            String
+  symbol          String
+  tokenAddress    String
+  tokenSymbol     String
+  tokenDecimals   Int
+  isWhitelisted   Boolean         @default(false)
+  riskScore       Int             @default(50)
+  description     String?
+  curatorName     String?
+  curatorImage    String?
+  forumLink       String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  lastSyncAt      DateTime        @default(now())
+  
+  // Relations
+  metrics         VaultMetric[]
+  investments     UserInvestment[]
+
+  @@index([chainId])
+  @@index([tokenAddress])
+  @@index([isWhitelisted])
+  @@index([riskScore])
+  @@unique([address, chainId])
+}
+
+model VaultMetric {
+  id                    String      @id @default(uuid())
+  vaultId               String
+  date                  DateTime    @default(now())
+  apy                   Float
+  netApy                Float
+  netApyWithoutRewards  Float?
+  dailyApy              Float?
+  dailyNetApy           Float?
+  weeklyApy             Float?
+  weeklyNetApy          Float?
+  monthlyApy            Float?
+  monthlyNetApy         Float?
+  totalAssets           String      // BigInt as string
+  totalAssetsUsd        Float
+  totalSupply           String      // BigInt as string
+  sharePrice            Float
+  sharePriceUsd         Float
+  tvlUsd                Float
+  utilizationRate       Float?
+  
+  // Additional Morpho-specific metrics
+  supplyAssets          String?     // BigInt as string
+  supplyAssetsUsd       Float?
+  borrowAssets          String?     // BigInt as string
+  borrowAssetsUsd       Float?
+  fee                   Float?
+  
+  // Performance tracking
+  performanceScore      Float?      // Calculated performance score
+  riskAdjustedReturn    Float?      // Risk-adjusted return metric
+  volatility            Float?      // Price volatility
+  sharpeRatio           Float?      // Risk-adjusted performance
+  
+  // Market data
+  marketCount           Int?        // Number of underlying markets
+  avgMarketUtilization  Float?      // Average utilization across markets
+  
+  // Relations
+  vault                 MorphoVault @relation(fields: [vaultId], references: [id], onDelete: Cascade)
+  rewards               VaultReward[]
+  allocations           VaultAllocation[]
+
+  @@index([vaultId])
+  @@index([date])
+  @@index([apy])
+  @@index([tvlUsd])
+  @@index([performanceScore])
+  @@unique([vaultId, date])
+}
+
+model UserInvestment {
+  id                    String      @id @default(uuid())
+  userWalletAddress     String
+  vaultId               String
+  amountInvested        String      // BigInt as string
+  sharesReceived        String      // BigInt as string
+  currentValue          Float
+  currentShares         String      // BigInt as string
+  averageEntryPrice     Float
+  totalDeposits         Float       @default(0)
+  totalWithdrawals      Float       @default(0)
+  realizedPnl           Float       @default(0)
+  unrealizedPnl         Float       @default(0)
+  status                String      @default("active") // active, withdrawn, partial
+  firstInvestmentAt     DateTime    @default(now())
+  lastTransactionAt     DateTime    @default(now())
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+  
+  // Relations
+  vault                 MorphoVault @relation(fields: [vaultId], references: [id], onDelete: Cascade)
+
+  @@index([userWalletAddress])
+  @@index([vaultId])
+  @@index([status])
+  @@unique([userWalletAddress, vaultId])
+}
+
+model RebalanceJob {
+  id                    String      @id @default(uuid())
+  userWalletAddress     String
+  scheduledAt           DateTime
+  executedAt            DateTime?
+  status                String      @default("pending") // pending, in_progress, completed, failed
+  jobType               String      @default("daily") // daily, manual, emergency
+  fromVaults            Json        // Array of {vaultId, amount}
+  toVaults              Json        // Array of {vaultId, amount}
+  totalAmount           Float
+  gasUsed               String?     // BigInt as string
+  transactionHashes     String[]    @default([])
+  errorMessage          String?
+  retryCount            Int         @default(0)
+  maxRetries            Int         @default(3)
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+  
+  // Note: RebalanceJob references vaults via JSON fields (fromVaults, toVaults)
+
+  @@index([userWalletAddress])
+  @@index([scheduledAt])
+  @@index([status])
+  @@index([jobType])
+}
+
+model VaultReward {
+  id              String      @id @default(uuid())
+  vaultMetricId   String
+  assetAddress    String
+  chainId         Int
+  supplyApr       Float
+  borrowApr       Float?
+  yearlySupplyTokens Float?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relations
+  vaultMetric     VaultMetric @relation(fields: [vaultMetricId], references: [id], onDelete: Cascade)
+
+  @@index([vaultMetricId])
+  @@index([assetAddress, chainId])
+}
+
+model VaultAllocation {
+  id              String      @id @default(uuid())
+  vaultMetricId   String
+  marketUniqueKey String
+  supplyAssets    Float
+  supplyAssetsUsd Float
+  borrowAssets    Float?
+  borrowAssetsUsd Float?
+  utilizationRate Float?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relations
+  vaultMetric     VaultMetric @relation(fields: [vaultMetricId], references: [id], onDelete: Cascade)
+
+  @@index([vaultMetricId])
+  @@index([marketUniqueKey])
+}
