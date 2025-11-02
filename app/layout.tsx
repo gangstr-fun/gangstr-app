@@ -3,7 +3,7 @@ import "./globals.css";
 import ClientLayout from "./client-layout";
 
 export const metadata: Metadata = {
-  title: "Gangstr Dashboard",
+  title: "Stratifi Dashboard",
   description: "Advanced financial analytics platform for modern investors",
   manifest: "/manifest.json",
   icons: {
