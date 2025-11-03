@@ -226,7 +226,7 @@ const AgentChatPage = () => {
     {
       id: "1",
       content:
-        "Hello! I'm your Stratifi AI Portfolio Automation agent. How can I assist with your portfolio today?",
+        "Hello! I'm your Gangstr AI Portfolio Automation agent. How can I assist with your portfolio today?",
       sender: "agent",
       timestamp: new Date(),
     },
@@ -236,7 +236,7 @@ const AgentChatPage = () => {
     {
       id: "1",
       content:
-        "Hello! I'm your Stratifi AI Research agent. What markets or assets would you like to research today?",
+        "Hello! I'm your Gangstr AI Research agent. What markets or assets would you like to research today?",
       sender: "agent",
       timestamp: new Date(),
     },

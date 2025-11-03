@@ -251,7 +251,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </div>
             <div className="flex items-center justify-center space-x-2">
               <a
-                href="https://t.me/stratifixyz"
+                href="https://t.me/gangstrxyz"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 rounded-xl group"
@@ -268,7 +268,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 </svg>
               </a>
               <a
-                href="https://x.com/stratifixyz"
+                href="https://x.com/gangstrxyz"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 rounded-xl group"

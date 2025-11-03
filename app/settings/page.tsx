@@ -421,7 +421,7 @@ export default function SettingsPage() {
                   <div>
                     <h3 className="font-medium text-gray-900">Sign Out</h3>
                     <p className="text-sm text-gray-600">
-                      Sign out of your Stratifi account
+                      Sign out of your Gangstr account
                     </p>
                   </div>
                   <Button

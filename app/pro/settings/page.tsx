@@ -1481,7 +1481,7 @@ export default function ProSettingsPage() {
                       <div>
                         <h3 className="font-medium text-gray-900">Sign Out</h3>
                         <p className="text-sm text-gray-600">
-                          Sign out of your Stratifi Pro account
+                          Sign out of your Gangstr Pro account
                         </p>
                       </div>
                       <Button

@@ -101,8 +101,8 @@ export default function ProModePage() {
             </Link>
             <div className="w-px h-6 bg-border"></div>
             <Link href="/pro" className="flex items-center space-x-2">
-              <Image src="/new-logo.svg" alt="Stratifi" width={32} height={32} />
-              <span className="text-xl font-semibold text-foreground">Stratifi Pro</span>
+              <Image src="/new-logo.svg" alt="Gangstr" width={32} height={32} />
+              <span className="text-xl font-semibold text-foreground">Gangstr Pro</span>
             </Link>
           </div>
           
@@ -277,8 +277,8 @@ export default function ProModePage() {
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <Image src="/new-logo.svg" alt="Stratifi" width={24} height={24} />
-              <span className="text-sm text-muted-foreground">© 2025 Stratifi Pro. All rights reserved.</span>
+              <Image src="/new-logo.svg" alt="Gangstr" width={24} height={24} />
+              <span className="text-sm text-muted-foreground">© 2025 Gangstr Pro. All rights reserved.</span>
             </div>
             <div className="flex space-x-6">
               <Link href="/support" className="text-sm text-muted-foreground hover:text-foreground transition-colors">

@@ -15,7 +15,7 @@ const Footer: React.FC = () => {
 
         <div className="flex flex-wrap gap-6">
           <a
-            href="https://x.com/stratifixyz"
+            href="https://x.com/gangstrxyz"
             target="_blank"
             rel="noopener noreferrer"
             className="text-muted-foreground hover:text-primary transition-colors text-xs"
@@ -24,7 +24,7 @@ const Footer: React.FC = () => {
             X (Twitter)
           </a>
           <a
-            href="https://t.me/stratifixyz"
+            href="https://t.me/gangstrxyz"
             target="_blank"
             rel="noopener noreferrer"
             className="text-muted-foreground hover:text-primary transition-colors text-xs"

@@ -153,7 +153,7 @@ html {
   @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-5;
 }
 
-/* ========== STRATIFI THEME ENHANCEMENTS ========== */
+/* ========== GANGSTR THEME ENHANCEMENTS ========== */
 /* Safe additive theme classes - won't break existing functionality */
 
 /* Modern Light Theme Utilities */
@@ -232,7 +232,7 @@ html {
 
 /* Enhanced glow effects */
 .theme-glow {
-  box-shadow: 0 0 20px var(--stratifi-glow);
+  box-shadow: 0 0 20px var(--gangstr-glow);
 }
 
 .theme-glow-hover {
@@ -240,22 +240,22 @@ html {
 }
 
 .theme-glow-hover:hover {
-  box-shadow: 0 0 30px var(--stratifi-glow-strong);
+  box-shadow: 0 0 30px var(--gangstr-glow-strong);
 }
 
 /* Enhanced scrollbar */
 .theme-scrollbar {
   /* Firefox scrollbar styles */
   scrollbar-width: thin;
-  scrollbar-color: var(--stratifi-primary) transparent;
+  scrollbar-color: var(--gangstr-primary) transparent;
 }
 .theme-scrollbar::-webkit-scrollbar-thumb {
-  background: var(--stratifi-primary);
+  background: var(--gangstr-primary);
   border-radius: 3px;
 }
 
 .theme-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: var(--stratifi-secondary);
+  background: var(--gangstr-secondary);
 }
 
 /* Background gradients */
@@ -273,27 +273,27 @@ html {
 
 /* Described theme background colors */
 .theme-bg-primary {
-  background: var(--stratifi-bg-primary);
+  background: var(--gangstr-bg-primary);
 }
 
 .theme-bg-secondary {
-  background: var(--stratifi-bg-secondary);
+  background: var(--gangstr-bg-secondary);
 }
 
 .theme-bg-card {
-  background: var(--stratifi-bg-card);
+  background: var(--gangstr-bg-card);
 }
 
 /* Described theme gradient backgrounds */
 .theme-bg-gradient-described {
   background: linear-gradient(135deg, 
-    var(--stratifi-bg-primary) 0%, 
-    var(--stratifi-bg-secondary) 100%);
+    var(--gangstr-bg-primary) 0%, 
+    var(--gangstr-bg-secondary) 100%);
 }
 
 /* Card enhancements */
 .theme-card {
-  background: var(--stratifi-glass);
+  background: var(--gangstr-glass);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 12px;
