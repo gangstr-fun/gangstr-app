@@ -1,74 +1,49 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, Wallet, TrendingUp, Settings, RefreshCw, ExternalLink } from 'lucide-react';
 import { useUnifiedWallet } from '@/lib/hooks/useUnifiedWallet';
-import { BasicWalletCard } from './BasicWalletCard';
-import { WalletTierSelector } from './WalletTierSelector';
 import { formatEther } from 'viem';
 import { toast } from 'sonner';
 import { WalletStats } from '@/lib/types';
 
 export function WalletDashboard() {
-  const {
-    walletMode,
-    basicWallet,
-    proWallet,
-    userWalletAddress,
-    isLoading,
-    refreshWallets,
-    switchMode
-  } = useUnifiedWallet();
-
-  const basicWalletAddress = basicWallet.address;
+  const { proWallet, userWalletAddress, isLoading, refreshWallets } = useUnifiedWallet();
   const proWalletAddress = proWallet.address;
-  // const basicWalletStatus = basicWallet.status;
   const proWalletStatus = proWallet.status;
 
   const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview');
   const [walletStats, setWalletStats] = useState<WalletStats | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Fetch wallet balance and stats
-  const fetchWalletStats = async () => {
-    if (!basicWalletAddress && !proWalletAddress) return;
+  // Fetch wallet balance and stats (Pro-only)
+  const fetchWalletStats = useCallback(async () => {
+    if (!proWalletAddress || !userWalletAddress) return;
 
     try {
-      // Fetch balance for basic wallet
-      if (walletMode === 'basic' && basicWalletAddress && userWalletAddress) {
-        const response = await fetch(`/api/agent-wallet/balance?userWalletAddress=${encodeURIComponent(userWalletAddress)}&chainId=8453`, {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        });
+      const response = await fetch(`/api/agent-wallet/balance?userWalletAddress=${encodeURIComponent(userWalletAddress)}&chainId=8453`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
 
-        if (response.ok) {
-          const data = await response.json();
-          setWalletStats({
-            balance: data.balance || '0',
-            transactionCount: data.transactionCount || 0,
-            totalVolume: data.totalVolume || '0',
-            gasUsed: data.gasUsed || '0'
-          });
-        }
-      }
-      // For pro wallet, we'd fetch from the existing agent wallet API
-      else if (walletMode === 'pro' && proWalletAddress) {
-        // This would use existing pro wallet balance fetching logic
+      if (response.ok) {
+        const data = await response.json();
+        const payload = data.data || data;
         setWalletStats({
-          balance: '0', // Placeholder - would fetch from existing API
-          transactionCount: 0,
-          totalVolume: '0',
-          gasUsed: '0'
+          balance: payload.balance || '0',
+          transactionCount: payload.transactionCount || 0,
+          totalVolume: payload.totalVolume || '0',
+          gasUsed: payload.gasUsed || '0'
         });
       }
-    } catch (error) {
-      console.error('Failed to fetch wallet stats:', error);
+    } catch (e) {
+      console.error('Failed to fetch wallet stats:', e);
     }
-  };
+  }, [proWalletAddress, userWalletAddress]);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -76,7 +51,7 @@ export function WalletDashboard() {
       await refreshWallets();
       await fetchWalletStats();
       toast.success('Wallet data refreshed');
-    } catch (error) {
+    } catch {
       toast.error('Failed to refresh wallet data');
     } finally {
       setIsRefreshing(false);
@@ -85,7 +60,7 @@ export function WalletDashboard() {
 
   useEffect(() => {
     fetchWalletStats();
-  }, [basicWalletAddress, proWalletAddress, walletMode, userWalletAddress]);
+  }, [fetchWalletStats]);
 
   if (isLoading) {
     return (
@@ -104,14 +79,10 @@ export function WalletDashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">Wallet Dashboard</h2>
-          <p className="text-gray-600 mt-1">
-            Manage your {walletMode} tier wallet and view performance metrics
-          </p>
+          <p className="text-gray-600 mt-1">Manage your Pro wallet and view performance metrics</p>
         </div>
         <div className="flex items-center space-x-2">
-          <Badge variant={walletMode === 'basic' ? 'secondary' : 'default'}>
-            {walletMode.charAt(0).toUpperCase() + walletMode.slice(1)} Tier
-          </Badge>
+          <Badge>Pro</Badge>
           <Button
             variant="outline"
             size="sm"
@@ -189,15 +160,10 @@ export function WalletDashboard() {
 
           {/* Wallet Details */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Current Wallet */}
+            {/* Current Wallet (Pro-only) */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Current Wallet</h3>
-              
-              {walletMode === 'basic' && basicWalletAddress ? (
-                <BasicWalletCard
-                  onUpgrade={() => setActiveTab('settings')}
-                />
-              ) : walletMode === 'pro' && proWalletAddress ? (
+              {proWalletAddress ? (
                 <Card>
                   <CardHeader>
                     <div className="flex items-center justify-between">
@@ -279,10 +245,15 @@ export function WalletDashboard() {
         </TabsContent>
 
         <TabsContent value="settings" className="space-y-6">
-          <WalletTierSelector onTierChange={(tier) => {
-            toast.success(`Switched to ${tier} tier`);
-            setActiveTab('overview');
-          }} />
+          <Card>
+            <CardHeader>
+              <CardTitle>Pro Wallet</CardTitle>
+              <CardDescription>Pro is the only available tier.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">Your account is configured for Pro features.</p>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
