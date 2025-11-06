@@ -30,37 +30,32 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get pro wallet (smart wallet) - basic mode removed
+    // Pro-only: lookup smart wallet via mapping
     const agentWalletMap = await prisma.agentWalletMap.findUnique({
-      where: { userWalletAddress: userWalletAddress }
+      where: { userWalletAddress }
     });
 
     if (!agentWalletMap) {
       return NextResponse.json(
-        { error: 'Pro wallet mapping not found. Please create wallet first.' },
+        { error: 'Agent wallet mapping not found' },
         { status: 404 }
       );
     }
 
-    // Get the actual agent wallet
     const agentWallet = await prisma.agentWallet.findUnique({
       where: { agent_id: agentWalletMap.agent_id }
     });
 
-    if (!agentWallet) {
+    if (!agentWallet || !agentWallet.smartWalletAddress) {
       return NextResponse.json(
-        { error: 'Pro wallet not found' },
+        { error: 'Smart wallet not found' },
         { status: 404 }
       );
     }
 
-    // Use smart wallet address if available, otherwise use signer address
-    const walletAddress = agentWallet.smartWalletAddress || agentWallet.walletPublicKey;
-    
-    // Get chain configuration
+    // Fetch balance from blockchain
     const chain = chainIdNum === 8453 ? base : chainIdNum === 1 ? mainnet : base;
     
-    // Fetch balance from blockchain
     const publicClient = createPublicClient({
       chain,
       transport: http()
@@ -69,7 +64,7 @@ export async function GET(request: NextRequest) {
     let balance: bigint;
     try {
       balance = await publicClient.getBalance({
-        address: walletAddress as `0x${string}`
+        address: agentWallet.smartWalletAddress as `0x${string}`
       });
     } catch (error) {
       console.error('Error fetching balance from blockchain:', error);
@@ -83,8 +78,7 @@ export async function GET(request: NextRequest) {
         balance: balance.toString(),
         balanceFormatted: formatEther(balance),
         chainId: chainIdNum,
-        walletMode: 'pro',
-        walletAddress
+        walletMode: 'pro'
       }
     });
   } catch (error) {
