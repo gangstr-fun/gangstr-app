@@ -33,7 +33,7 @@ export default function HomePage() {
       activeWalletAddress &&
       activeWalletStatus === "connected"
     ) {
-      router.push("/dashboard");
+      router.push("/pro/dashboard");
     }
   }, [authenticated, activeWalletAddress, activeWalletStatus, router]);
 

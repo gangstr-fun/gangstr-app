@@ -34,6 +34,11 @@ export default function DashboardPage() {
   });
   const router = useRouter();
 
+  // Redirect this route to Pro dashboard
+  useEffect(() => {
+    router.replace('/pro/dashboard');
+  }, [router]);
+
   // Redirect if not authenticated
   useEffect(() => {
     if (!authenticated) {
