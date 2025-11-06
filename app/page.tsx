@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import TopUpModal from "@/components/TopUpModal";
 import AutoInvestFlow from "@/components/AutoInvestFlow";
 import { ArrowRight, Zap, Wallet } from "lucide-react";
-import Link from "next/link";
+// Link removed (not used)
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -16,8 +16,8 @@ import { useRouter } from "next/navigation";
  * Inspired by ARMA's simple approach: Connect → Top-up → Auto-invest
  */
 export default function HomePage() {
-  const { ready, authenticated, login, user } = usePrivy();
-  const { activeWalletAddress, activeWalletStatus, walletMode } =
+  const { authenticated, login } = usePrivy();
+  const { activeWalletAddress, activeWalletStatus } =
     useUnifiedWallet();
   const [isConnecting, setIsConnecting] = useState(false);
   const [showTopUpModal, setShowTopUpModal] = useState(false);

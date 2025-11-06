@@ -12,8 +12,7 @@ import {
   BarChart3, 
   Shield, 
   Zap, 
-  ArrowRight,
-  ChevronLeft
+  ArrowRight
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -92,14 +91,6 @@ export default function ProModePage() {
       <header className="border-b border-border/50 backdrop-blur-sm bg-background/80">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Link 
-              href="/dashboard" 
-              className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <ChevronLeft size={20} />
-              <span>Back to Basic</span>
-            </Link>
-            <div className="w-px h-6 bg-border"></div>
             <Link href="/pro" className="flex items-center space-x-2">
               <Image src="/new-logo.svg" alt="Gangstr" width={32} height={32} />
               <span className="text-xl font-semibold text-foreground">Gangstr Pro</span>
@@ -157,15 +148,7 @@ export default function ProModePage() {
                 <ArrowRight size={20} className="ml-2" />
               </Button>
               
-              <Link href="/dashboard">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="px-8 py-4 text-lg font-semibold rounded-xl border-2 hover:bg-muted/50 transition-all duration-200"
-                >
-                  Try Basic Mode
-                </Button>
-              </Link>
+              {/* Basic button removed for Pro-only */}
             </div>
           </div>
 
@@ -200,75 +183,7 @@ export default function ProModePage() {
             </div>
           </div>
 
-          {/* Comparison Section */}
-          <div className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground text-center mb-8">
-              Basic vs Pro Mode
-            </h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              {/* Basic Mode */}
-              <GlassPanel className="p-8">
-                <div className="text-center mb-6">
-                  <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Zap className="text-green-500" size={32} />
-                  </div>
-                  <h3 className="text-xl font-semibold text-foreground mb-2">Basic Mode</h3>
-                  <p className="text-muted-foreground">Simple, automated yield optimization</p>
-                </div>
-                <ul className="space-y-3 text-sm">
-                  <li className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span>Automatic vault selection</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span>Daily optimization</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span>Simple dashboard</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span>One-click top-up</span>
-                  </li>
-                </ul>
-              </GlassPanel>
-
-              {/* Pro Mode */}
-              <GlassPanel className="p-8 border-2 border-primary/20">
-                <div className="text-center mb-6">
-                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Shield className="text-primary" size={32} />
-                  </div>
-                  <h3 className="text-xl font-semibold text-foreground mb-2">Pro Mode</h3>
-                  <p className="text-muted-foreground">Advanced tools for serious investors</p>
-                </div>
-                <ul className="space-y-3 text-sm">
-                  <li className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-primary rounded-full"></div>
-                    <span>AI agent consultation</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-primary rounded-full"></div>
-                    <span>Advanced portfolio analytics</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-primary rounded-full"></div>
-                    <span>Custom strategy building</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-primary rounded-full"></div>
-                    <span>On-chain research tools</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-primary rounded-full"></div>
-                    <span>Risk assessment & optimization</span>
-                  </li>
-                </ul>
-              </GlassPanel>
-            </div>
-          </div>
+          {/* Basic vs Pro comparison removed for Pro-only */}
         </div>
       </main>
 
@@ -284,9 +199,7 @@ export default function ProModePage() {
               <Link href="/support" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Support
               </Link>
-              <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Basic Mode
-              </Link>
+              {/* Basic mode link removed */}
             </div>
           </div>
         </div>
