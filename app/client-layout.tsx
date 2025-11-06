@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import Provider from "./privy-provider";
-import { useRouter, usePathname } from "next/navigation";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import { MobileNav } from "@/components/molecule/mobile-nav";
@@ -17,10 +16,7 @@ export default function ClientLayout({
   children: React.ReactNode;
 }>) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [mode, setMode] = useState<"basic" | "pro">("basic"); // Default to basic mode
   const isMobile = useIsMobile();
-  const router = useRouter();
-  const pathname = usePathname();
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -30,27 +26,7 @@ export default function ClientLayout({
     setSidebarOpen(false);
   };
 
-  const handleModeChange = (newMode: "basic" | "pro") => {
-    setMode(newMode);
-    if (newMode === "basic") {
-      router.push("/dashboard");
-    } else {
-      router.push("/pro/agent/chat");
-    }
-  };
-
-  // Auto-detect mode based on current route
-  useEffect(() => {
-    if (pathname?.startsWith("/pro/")) {
-      setMode("pro");
-    } else if (
-      pathname === "/dashboard" ||
-      pathname === "/portfolio" ||
-      pathname === "/settings"
-    ) {
-      setMode("basic");
-    }
-  }, [pathname]);
+  // Mode removed: Pro-only experience
 
   // Close sidebar when resizing from mobile to desktop
   useEffect(() => {
@@ -65,12 +41,7 @@ export default function ClientLayout({
       <div className="flex h-screen overflow-hidden">
         {/* Sidebar - positioned with proper z-index */}
         <div className="z-30 lg:z-auto">
-          <Sidebar
-            isOpen={sidebarOpen}
-            onClose={closeSidebar}
-            mode={mode}
-            onModeChange={handleModeChange}
-          />
+          <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
         </div>
 
         {/* Overlay for mobile sidebar */}
@@ -84,7 +55,7 @@ export default function ClientLayout({
         {/* Main Content Area - ensuring there's proper spacing from sidebar */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Header */}
-          <Header toggleSidebar={toggleSidebar} mode={mode} />
+          <Header toggleSidebar={toggleSidebar} />
 
           {/* Main Content with proper padding for fixed elements */}
           <main className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 bg-background pb-20 lg:pb-6">

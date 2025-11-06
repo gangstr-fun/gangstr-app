@@ -1,7 +1,6 @@
 
 export interface HeaderProps {
     toggleSidebar: () => void;
-    mode?: 'basic' | 'pro';
 }
 
 export interface Automation {

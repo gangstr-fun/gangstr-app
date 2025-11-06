@@ -58,7 +58,7 @@ export function useUnifiedWallet(): UnifiedWalletState {
   const CACHE_DURATION = 30000; // 30 seconds cache
   
   // State management
-  const [walletMode, setWalletMode] = useState<WalletMode>('basic'); // Default to basic
+  const [walletMode, setWalletMode] = useState<WalletMode>('pro'); // Default to pro (basic removed)
   const [basicWallet, setBasicWallet] = useState<WalletInfo>({
     address: null,
     status: 'idle',

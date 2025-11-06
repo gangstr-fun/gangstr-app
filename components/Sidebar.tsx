@@ -1,45 +1,21 @@
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import {
-  BarChart3,
-  MessageSquare,
-  PieChart,
-  Settings,
-  TrendingUp,
-  X,
-  Zap,
-  CreditCard,
-  Home,
-  Crown,
-  ChevronDown,
-  Check,
-} from "lucide-react";
+import { MessageSquare, Settings, X, Home } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
-  mode?: "basic" | "pro";
-  onModeChange?: (mode: "basic" | "pro") => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
   onClose,
-  mode = "pro",
-  onModeChange,
 }) => {
   const pathname = usePathname();
-  const [showModeSelector, setShowModeSelector] = useState(false);
-
-  const basicNavItems = [
-    { href: "/dashboard", icon: Home, label: "Dashboard" },
-    { href: "/portfolio", icon: PieChart, label: "Portfolio" },
-    { href: "/settings", icon: Settings, label: "Settings" },
-  ];
-
   const proNavItems = [
+    { href: "/pro/dashboard", icon: Home, label: "Dashboard" },
     { href: "/pro/agent/chat", icon: MessageSquare, label: "Agentic Chat" },
     // { href: "/pro/portfolio", icon: PieChart, label: "Portfolio" },
     // { href: "/pro/strategy", icon: BarChart3, label: "Strategy" },
@@ -47,8 +23,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     // { href: "/pro/research/risk-assessment", icon: CreditCard, label: "Risk Analysis" },
     { href: "/pro/settings", icon: Settings, label: "Settings" },
   ];
-
-  const navItems = mode === "basic" ? basicNavItems : proNavItems;
+  const navItems = proNavItems;
 
   return (
     <>
@@ -147,100 +122,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             })}
           </nav>
 
-          <div className="px-4 pb-4">
-            <div className="relative mb-4">
-              <button
-                onClick={() => setShowModeSelector(!showModeSelector)}
-                className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-xl transition-all duration-200 border border-gray-200"
-              >
-                <div className="flex items-center space-x-2">
-                  {mode === "pro" ? (
-                    <Crown className="text-primary-600" size={16} />
-                  ) : (
-                    <Zap className="text-gray-600" size={16} />
-                  )}
-                  <span className="font-medium text-gray-900 capitalize">
-                    {mode} Mode
-                  </span>
-                </div>
-                <ChevronDown
-                  className={`text-gray-400 transition-transform duration-200 ${
-                    showModeSelector ? "rotate-180" : ""
-                  }`}
-                  size={16}
-                />
-              </button>
-
-              {/* Mode Dropdown */}
-              {showModeSelector && (
-                <div className="absolute bottom-full left-0 right-0 mb-2 bg-white border border-gray-200 rounded-xl shadow-xl z-50 p-4 space-y-3">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-sm font-semibold text-gray-900">
-                      Select Mode
-                    </h3>
-                    <button
-                      onClick={() => setShowModeSelector(false)}
-                      className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
-                    >
-                      <X size={16} className="text-gray-500" />
-                    </button>
-                  </div>
-
-                  {/* Basic Mode Option */}
-                  <button
-                    onClick={() => {
-                      onModeChange?.("basic");
-                      setShowModeSelector(false);
-                    }}
-                    className="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 transition-colors group"
-                  >
-                    <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                      <Zap size={18} className="text-primary" />
-                    </div>
-                    <div className="flex-1 text-left">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm font-medium text-gray-900">
-                          Basic Mode
-                        </span>
-                        {mode === "basic" && (
-                          <Check size={14} className="text-primary-600" />
-                        )}
-                      </div>
-                      <p className="text-xs text-gray-500 mt-0.5">
-                        Simple interface for beginners
-                      </p>
-                    </div>
-                  </button>
-
-                  {/* Pro Mode Option */}
-                  <button
-                    onClick={() => {
-                      onModeChange?.("pro");
-                      setShowModeSelector(false);
-                    }}
-                    className="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 transition-colors group"
-                  >
-                    <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                      <Crown size={18} className="text-primary" />
-                    </div>
-                    <div className="flex-1 text-left">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm font-medium text-gray-900">
-                          Pro Mode
-                        </span>
-                        {mode === "pro" && (
-                          <Check size={14} className="text-primary-600" />
-                        )}
-                      </div>
-                      <p className="text-xs text-gray-500 mt-0.5">
-                        Advanced features and analytics
-                      </p>
-                    </div>
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
+          {/* Mode selector removed for Pro-only experience */}
 
           {/* Footer */}
           <div className="px-4 py-4 border-t border-gray-200">

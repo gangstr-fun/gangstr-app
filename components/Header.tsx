@@ -3,13 +3,12 @@ import { Wallet, LogOut, Plus, Menu } from "lucide-react";
 import { usePrivy } from "@privy-io/react-auth";
 import { useUnifiedWallet } from "@/lib/hooks/useUnifiedWallet";
 import Image from "next/image";
-import Link from "next/link";
 import TopUpModal from "./TopUpModal";
 import { HeaderProps } from "@/lib/types";
 
-const Header: React.FC<HeaderProps> = ({ toggleSidebar, mode = "pro" }) => {
-  const { login, authenticated, user, logout } = usePrivy();
-  const { userWalletAddress, userWalletStatus } = useUnifiedWallet();
+const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
+  const { login, authenticated, logout } = usePrivy();
+  const { userWalletAddress } = useUnifiedWallet();
   // const isMobile = useIsMobile();
   const [isTopUpModalOpen, setIsTopUpModalOpen] = useState(false);
 
