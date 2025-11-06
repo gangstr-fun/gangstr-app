@@ -64,7 +64,7 @@ export default function HomePage() {
   const handleInvestmentComplete = (success: boolean) => {
     if (success) {
       // Redirect to dashboard after successful investment
-      router.push("/dashboard");
+      router.push("/pro/dashboard");
     }
   };
 
