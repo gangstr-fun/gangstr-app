@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { basicAgentWalletService } from '@/lib/services/BasicAgentWalletService';
-import { isAddress, formatEther } from 'viem';
+import { isAddress, formatEther, createPublicClient, http } from 'viem';
+import { base, mainnet } from 'viem/chains';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
@@ -30,54 +30,50 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get user profile to determine wallet tier
-    const userProfile = await prisma.userProfile.findUnique({
-      where: { userWalletAddress: userWalletAddress },
-      select: {
-        userWalletAddress: true,
-        basicWalletAddress: true,
-        proWalletAddress: true
-      }
+    // Get pro wallet (smart wallet) - basic mode removed
+    const agentWalletMap = await prisma.agentWalletMap.findUnique({
+      where: { userWalletAddress: userWalletAddress }
     });
 
-    // Determine wallet type based on which address matches the request
-    const isBasicWallet = userProfile?.basicWalletAddress === userWalletAddress;
-    
-    let balance: bigint;
-
-    if (isBasicWallet) {
-      // Get balance for basic wallet
-      balance = await basicAgentWalletService.getWalletBalance(
-        userWalletAddress,
-        chainIdNum
+    if (!agentWalletMap) {
+      return NextResponse.json(
+        { error: 'Pro wallet mapping not found. Please create wallet first.' },
+        { status: 404 }
       );
-    } else {
-      // Get balance for pro wallet (smart wallet)
-      // First find the agent wallet mapping
-      const agentWalletMap = await prisma.agentWalletMap.findUnique({
-        where: { userWalletAddress: userWalletAddress }
+    }
+
+    // Get the actual agent wallet
+    const agentWallet = await prisma.agentWallet.findUnique({
+      where: { agent_id: agentWalletMap.agent_id }
+    });
+
+    if (!agentWallet) {
+      return NextResponse.json(
+        { error: 'Pro wallet not found' },
+        { status: 404 }
+      );
+    }
+
+    // Use smart wallet address if available, otherwise use signer address
+    const walletAddress = agentWallet.smartWalletAddress || agentWallet.walletPublicKey;
+    
+    // Get chain configuration
+    const chain = chainIdNum === 8453 ? base : chainIdNum === 1 ? mainnet : base;
+    
+    // Fetch balance from blockchain
+    const publicClient = createPublicClient({
+      chain,
+      transport: http()
+    });
+
+    let balance: bigint;
+    try {
+      balance = await publicClient.getBalance({
+        address: walletAddress as `0x${string}`
       });
-
-      if (!agentWalletMap) {
-        return NextResponse.json(
-          { error: 'Agent wallet mapping not found' },
-          { status: 404 }
-        );
-      }
-
-      // Then get the actual agent wallet
-      const agentWallet = await prisma.agentWallet.findUnique({
-        where: { agent_id: agentWalletMap.agent_id }
-      });
-
-      if (!agentWallet || !agentWallet.smartWalletAddress) {
-        return NextResponse.json(
-          { error: 'Smart wallet not found' },
-          { status: 404 }
-        );
-      }
-
-      // For now, return 0 balance for smart wallets until we implement proper balance fetching
+    } catch (error) {
+      console.error('Error fetching balance from blockchain:', error);
+      // Return 0 if balance fetch fails
       balance = BigInt(0);
     }
 
@@ -87,7 +83,8 @@ export async function GET(request: NextRequest) {
         balance: balance.toString(),
         balanceFormatted: formatEther(balance),
         chainId: chainIdNum,
-        walletMode: isBasicWallet ? 'basic' : 'pro'
+        walletMode: 'pro',
+        walletAddress
       }
     });
   } catch (error) {

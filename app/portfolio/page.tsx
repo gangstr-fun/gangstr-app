@@ -11,7 +11,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 /**
- * Basic Mode Portfolio Page - Simple portfolio overview
+ * Portfolio Page - Portfolio overview
  * Shows current vault allocation, balance, and performance
  */
 export default function PortfolioPage() {

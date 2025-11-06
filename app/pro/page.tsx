@@ -92,7 +92,7 @@ export default function ProModePage() {
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Link href="/pro" className="flex items-center space-x-2">
-              <Image src="/new-logo.svg" alt="Gangstr" width={32} height={32} />
+              <Image src="/logo.png" alt="Gangstr" width={32} height={32} />
               <span className="text-xl font-semibold text-foreground">Gangstr Pro</span>
             </Link>
           </div>
@@ -192,7 +192,7 @@ export default function ProModePage() {
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <Image src="/new-logo.svg" alt="Gangstr" width={24} height={24} />
+              <Image src="/logo.png" alt="Gangstr" width={24} height={24} />
               <span className="text-sm text-muted-foreground">© 2025 Gangstr Pro. All rights reserved.</span>
             </div>
             <div className="flex space-x-6">

@@ -13,8 +13,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 /**
- * V2 Basic Mode Dashboard - Simple yield optimization interface
- * Shows wallet balance, current vault, and easy top-up
+ * Dashboard Page - Redirects to Pro Dashboard
+ * Basic mode has been removed - all users use Pro wallets
  */
 export default function DashboardPage() {
   const { authenticated, user, logout } = usePrivy();

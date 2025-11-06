@@ -7,7 +7,6 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, Wallet, TrendingUp, Settings, RefreshCw, ExternalLink } from 'lucide-react';
 import { useUnifiedWallet } from '@/lib/hooks/useUnifiedWallet';
-import { BasicWalletCard } from './BasicWalletCard';
 import { WalletTierSelector } from './WalletTierSelector';
 import { formatEther } from 'viem';
 import { toast } from 'sonner';
@@ -16,7 +15,6 @@ import { WalletStats } from '@/lib/types';
 export function WalletDashboard() {
   const {
     walletMode,
-    basicWallet,
     proWallet,
     userWalletAddress,
     isLoading,
@@ -24,9 +22,7 @@ export function WalletDashboard() {
     switchMode
   } = useUnifiedWallet();
 
-  const basicWalletAddress = basicWallet.address;
   const proWalletAddress = proWallet.address;
-  // const basicWalletStatus = basicWallet.status;
   const proWalletStatus = proWallet.status;
 
   const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview');
@@ -35,11 +31,11 @@ export function WalletDashboard() {
 
   // Fetch wallet balance and stats
   const fetchWalletStats = async () => {
-    if (!basicWalletAddress && !proWalletAddress) return;
+    if (!proWalletAddress) return;
 
     try {
-      // Fetch balance for basic wallet
-      if (walletMode === 'basic' && basicWalletAddress && userWalletAddress) {
+      // Fetch balance for pro wallet
+      if (walletMode === 'pro' && proWalletAddress && userWalletAddress) {
         const response = await fetch(`/api/agent-wallet/balance?userWalletAddress=${encodeURIComponent(userWalletAddress)}&chainId=8453`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' }
@@ -54,16 +50,6 @@ export function WalletDashboard() {
             gasUsed: data.gasUsed || '0'
           });
         }
-      }
-      // For pro wallet, we'd fetch from the existing agent wallet API
-      else if (walletMode === 'pro' && proWalletAddress) {
-        // This would use existing pro wallet balance fetching logic
-        setWalletStats({
-          balance: '0', // Placeholder - would fetch from existing API
-          transactionCount: 0,
-          totalVolume: '0',
-          gasUsed: '0'
-        });
       }
     } catch (error) {
       console.error('Failed to fetch wallet stats:', error);
@@ -85,7 +71,7 @@ export function WalletDashboard() {
 
   useEffect(() => {
     fetchWalletStats();
-  }, [basicWalletAddress, proWalletAddress, walletMode, userWalletAddress]);
+  }, [proWalletAddress, walletMode, userWalletAddress]);
 
   if (isLoading) {
     return (
@@ -105,12 +91,12 @@ export function WalletDashboard() {
         <div>
           <h2 className="text-2xl font-bold">Wallet Dashboard</h2>
           <p className="text-gray-600 mt-1">
-            Manage your {walletMode} tier wallet and view performance metrics
+            Manage your Pro tier wallet and view performance metrics
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <Badge variant={walletMode === 'basic' ? 'secondary' : 'default'}>
-            {walletMode.charAt(0).toUpperCase() + walletMode.slice(1)} Tier
+          <Badge variant="default">
+            Pro Tier
           </Badge>
           <Button
             variant="outline"
@@ -193,11 +179,7 @@ export function WalletDashboard() {
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Current Wallet</h3>
               
-              {walletMode === 'basic' && basicWalletAddress ? (
-                <BasicWalletCard
-                  onUpgrade={() => setActiveTab('settings')}
-                />
-              ) : walletMode === 'pro' && proWalletAddress ? (
+              {walletMode === 'pro' && proWalletAddress ? (
                 <Card>
                   <CardHeader>
                     <div className="flex items-center justify-between">

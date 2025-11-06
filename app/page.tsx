@@ -6,14 +6,14 @@ import { useUnifiedWallet } from "@/lib/hooks/useUnifiedWallet";
 import { Button } from "@/components/ui/button";
 import TopUpModal from "@/components/TopUpModal";
 import AutoInvestFlow from "@/components/AutoInvestFlow";
-import { ArrowRight, Zap, Wallet } from "lucide-react";
-// Link removed (not used)
+import { ArrowRight, Zap, Wallet, Shield, Users, TrendingUp } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 /**
- * V2 Basic Mode Landing Page - Streamlined yield optimization
- * Inspired by ARMA's simple approach: Connect → Top-up → Auto-invest
+ * gangstr.fun Landing Page - Trustless Copy Trading Protocol
+ * Enables traders to run private strategies in Phala TEEs and followers
+ * to copy trades automatically with cryptographic proof verification
  */
 export default function HomePage() {
   const { authenticated, login } = usePrivy();
@@ -48,8 +48,8 @@ export default function HomePage() {
         setIsConnecting(false);
       }
     } else if (activeWalletAddress && activeWalletStatus === "connected") {
-      // User is authenticated and has agent wallet, show top-up modal
-      setShowTopUpModal(true);
+      // User is authenticated and connected, redirect to dashboard
+      router.push("/pro/dashboard");
     }
   };
 
@@ -57,21 +57,21 @@ export default function HomePage() {
     setShowTopUpModal(false);
     setLastTopUpAmount(amount);
     setLastTopUpToken(token);
-    // Trigger auto investment flow
-    setIsAutoInvestOpen(true);
+    // Redirect to dashboard after top-up
+    router.push("/pro/dashboard");
   };
 
   const handleInvestmentComplete = (success: boolean) => {
     if (success) {
       // Redirect to dashboard after successful investment
-      router.push("/dashboard");
+      router.push("/pro/dashboard");
     }
   };
 
   const getConnectionStatus = () => {
     if (!authenticated) return "Connect Wallet";
-    if (activeWalletStatus === "loading") return "Setting up your vault...";
-    if (activeWalletStatus === "connected") return "Top Up & Invest";
+    if (activeWalletStatus === "loading") return "Setting up...";
+    if (activeWalletStatus === "connected") return "Go to Dashboard";
     return "Finalizing setup...";
   };
 
@@ -86,20 +86,57 @@ export default function HomePage() {
             {/* Left: Hero Content */}
             <div className="max-w-xl">
               <div className="inline-flex items-center space-x-2 bg-primary-100 text-primary-700 px-4 py-2 rounded-full text-sm font-medium mb-6 border border-primary-200">
-                <Zap size={16} />
-                <span>Intelligent Yield Optimization</span>
+                <Shield size={16} />
+                <span>Trustless Copy Trading</span>
               </div>
 
               <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
-                Still farming manually,{" "}
-                <span className="gradient-text">anon?</span>
+                Copy trades with{" "}
+                <span className="gradient-text">zero trust</span>
               </h1>
 
-              <p className="text-xl text-gray-600 mb-10 max-w-lg mx-auto lg:mx-0 leading-relaxed">
-                Welcome to the era of intelligent yield optimization. Connect
-                your wallet, top up, and let our AI automatically invest in the
-                best Morpho vaults.
+              <p className="text-xl text-gray-600 mb-8 max-w-lg mx-auto lg:mx-0 leading-relaxed">
+                Run private strategies in Phala TEEs. Copy trades automatically
+                with cryptographic proof verification. No API keys. No trust
+                required.
               </p>
+
+              {/* Key Features */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+                <div className="flex items-start gap-3 p-4 bg-white/50 backdrop-blur-sm rounded-lg border border-gray-200">
+                  <Shield className="text-primary-600 mt-1 flex-shrink-0" size={20} />
+                  <div>
+                    <h3 className="font-semibold text-sm text-gray-900 mb-1">
+                      Private Execution
+                    </h3>
+                    <p className="text-xs text-gray-600">
+                      Strategies run in Phala TEE enclaves
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-4 bg-white/50 backdrop-blur-sm rounded-lg border border-gray-200">
+                  <Zap className="text-primary-600 mt-1 flex-shrink-0" size={20} />
+                  <div>
+                    <h3 className="font-semibold text-sm text-gray-900 mb-1">
+                      Provable Performance
+                    </h3>
+                    <p className="text-xs text-gray-600">
+                      Every trade verified via zkVerify proofs
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-4 bg-white/50 backdrop-blur-sm rounded-lg border border-gray-200">
+                  <Users className="text-primary-600 mt-1 flex-shrink-0" size={20} />
+                  <div>
+                    <h3 className="font-semibold text-sm text-gray-900 mb-1">
+                      Non-Custodial
+                    </h3>
+                    <p className="text-xs text-gray-600">
+                      Funds stay in smart contract vaults
+                    </p>
+                  </div>
+                </div>
+              </div>
 
               <div className="flex justify-center lg:justify-start">
                 <Button
@@ -119,7 +156,7 @@ export default function HomePage() {
                       <Wallet size={20} />
                       <span>
                         {authenticated && activeWalletStatus === "connected"
-                          ? "Top Up & Invest"
+                          ? "Go to Dashboard"
                           : "Get Started"}
                       </span>
                       <ArrowRight size={20} />
@@ -129,68 +166,58 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right: Protocols Showcase */}
+            {/* Right: How It Works */}
             <div className="w-full lg:w-auto max-w-sm lg:max-w-none">
-              <aside className="grid gap-4">
-                {[
-                  {
-                    name: "Morpho",
-                    apy: 13.32,
-                    logo: "/protocol/Morpho.svg",
-                    logoSize: 28,
-                  },
-                  {
-                    name: "Seamless",
-                    apy: 9.61,
-                    logo: "/protocol/seamless.svg",
-                    logoSize: 28,
-                    addSpacing: true,
-                  },
-                  {
-                    name: "Moonwell",
-                    apy: 5.04,
-                    logo: "/protocol/moonwell.svg",
-                    logoSize: 32,
-                    addSpacing: true,
-                  },
-                  {
-                    name: "Aave",
-                    apy: 4.79,
-                    logo: "/protocol/aave.svg",
-                    logoSize: 32,
-                  },
-                  {
-                    name: "Wasabi",
-                    apy: 4.44,
-                    logo: "/protocol/wasabi.svg",
-                    logoSize: 28,
-                  },
-                ].map((p) => (
-                  <div
-                    key={p.name}
-                    className="flex items-center justify-between px-4 py-3 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Image
-                        src={p.logo}
-                        alt={p.name}
-                        width={p.logoSize}
-                        height={p.logoSize}
-                        className="rounded-full object-contain"
-                      />
-                      <span
-                        className={`text-sm font-medium text-gray-900 ${
-                          p.addSpacing ? "mr-4" : ""
-                        }`}
-                      >
-                        {p.name}
-                      </span>
-                    </div>
-                    <span className="text-sm font-semibold text-primary-600">
-                      {p.apy}%
-                    </span>
-                  </div>
-                ))}
+              <aside className="space-y-6">
+                <div className="bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl p-6 shadow-sm">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <TrendingUp size={20} className="text-primary-600" />
+                    For Traders
+                  </h3>
+                  <ol className="space-y-3 text-sm text-gray-600">
+                    <li className="flex items-start gap-2">
+                      <span className="font-semibold text-primary-600">1.</span>
+                      <span>Create strategy via form</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="font-semibold text-primary-600">2.</span>
+                      <span>Deploy to Phala TEE (private)</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="font-semibold text-primary-600">3.</span>
+                      <span>Get attestation & register on-chain</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="font-semibold text-primary-600">4.</span>
+                      <span>Earn fees from followers</span>
+                    </li>
+                  </ol>
+                </div>
+
+                <div className="bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl p-6 shadow-sm">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <Users size={20} className="text-primary-600" />
+                    For Followers
+                  </h3>
+                  <ol className="space-y-3 text-sm text-gray-600">
+                    <li className="flex items-start gap-2">
+                      <span className="font-semibold text-primary-600">1.</span>
+                      <span>Browse verified strategies</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="font-semibold text-primary-600">2.</span>
+                      <span>Subscribe & deposit to vault</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="font-semibold text-primary-600">3.</span>
+                      <span>Trades auto-mirror via proofs</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="font-semibold text-primary-600">4.</span>
+                      <span>Track PnL & withdraw anytime</span>
+                    </li>
+                  </ol>
+                </div>
               </aside>
             </div>
           </div>

@@ -1,7 +1,6 @@
 import { RebalancingSchedulerService } from './RebalancingSchedulerService';
 import { VaultManagementService } from './VaultManagementService';
 import { InvestmentAutomationService } from './InvestmentAutomationService';
-import { BasicAgentWalletService } from './BasicAgentWalletService';
 import { VaultDataSyncService } from './VaultDataSyncService';
 import { PrismaClient } from '@prisma/client';
 import { prisma } from '../prisma';
@@ -19,13 +18,11 @@ class StartupService {
     // Initialize required services
     const vaultService = new VaultManagementService();
     const investmentService = new InvestmentAutomationService();
-    const walletService = BasicAgentWalletService.getInstance();
     
     this.rebalancingScheduler = new RebalancingSchedulerService(
       prisma,
       vaultService,
-      investmentService,
-      walletService
+      investmentService
     );
     
     this.vaultDataSync = new VaultDataSyncService();

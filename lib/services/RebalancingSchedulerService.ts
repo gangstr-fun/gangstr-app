@@ -1,7 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { VaultManagementService } from './VaultManagementService';
 import { InvestmentAutomationService } from './InvestmentAutomationService';
-import { BasicAgentWalletService } from './BasicAgentWalletService';
 import { VaultDataFetcherService } from './VaultDataFetcherService';
 import cron from 'node-cron';
 
@@ -44,7 +43,6 @@ export class RebalancingSchedulerService {
   private prisma: PrismaClient;
   private vaultService: VaultManagementService;
   private investmentService: InvestmentAutomationService;
-  private walletService: BasicAgentWalletService;
   private vaultDataFetcher: VaultDataFetcherService;
   private schedulerRunning: boolean = false;
   private jobs: Map<string, NodeJS.Timeout> = new Map();
@@ -52,13 +50,11 @@ export class RebalancingSchedulerService {
   constructor(
     prisma: PrismaClient,
     vaultService: VaultManagementService,
-    investmentService: InvestmentAutomationService,
-    walletService: BasicAgentWalletService
+    investmentService: InvestmentAutomationService
   ) {
     this.prisma = prisma;
     this.vaultService = vaultService;
     this.investmentService = investmentService;
-    this.walletService = walletService;
     this.vaultDataFetcher = new VaultDataFetcherService();
   }
 

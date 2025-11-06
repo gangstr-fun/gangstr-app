@@ -391,7 +391,7 @@ export default function ProSettingsPage() {
                 value="agent"
                 className="flex items-center space-x-2"
               >
-                <Image src="/new-logo.svg" alt="Agent" width={16} height={16} />
+                <Image src="/logo.png" alt="Agent" width={16} height={16} />
                 <span className="hidden sm:inline">Agent</span>
               </TabsTrigger>
               <TabsTrigger
@@ -538,7 +538,7 @@ export default function ProSettingsPage() {
                 <div className="flex items-center space-x-4 mb-6">
                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                     <Image
-                      src="/new-logo.svg"
+                      src="/logo.png"
                       alt="AI Agent"
                       width={24}
                       height={24}

@@ -652,7 +652,7 @@ Sorry, there was an error communicating with the agent.
               {agentWalletStatus === "ready" && agentWalletAddress && (
                 <>
                   <Image
-                    src="/new-logo.svg"
+                    src="/logo.png"
                     alt="Agent"
                     width={12}
                     height={12}
@@ -703,7 +703,7 @@ Sorry, there was an error communicating with the agent.
                       : "text-muted-foreground hover:bg-muted"
                   }`}
                 >
-                  <Image src="/new-logo.svg" alt="Automation" width={16} height={16} className="inline-block mr-1 sm:mr-2" />
+                  <Image src="/logo.png" alt="Automation" width={16} height={16} className="inline-block mr-1 sm:mr-2" />
                   {isMobile ? "Automation" : "Automation Mode"}
                 </button>
               </div>
@@ -770,7 +770,7 @@ Sorry, there was an error communicating with the agent.
               {message.sender === "agent" && (
                 <div className="flex-shrink-0 h-7 w-7 sm:h-8 sm:w-8 rounded-full flex items-center justify-center mr-2 sm:mr-3 bg-secondary border border-border shadow-lg">
                   <Image
-                    src="/new-logo.svg"
+                    src="/logo.png"
                     alt="Agent"
                     width={16}
                     height={16}

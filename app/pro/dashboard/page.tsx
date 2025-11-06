@@ -12,7 +12,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 /**
- * V2 Basic Mode Dashboard - Simple yield optimization interface
+ * Pro Dashboard - Yield optimization interface
  * Shows wallet balance, current vault, and easy top-up
  */
 export default function DashboardPage() {

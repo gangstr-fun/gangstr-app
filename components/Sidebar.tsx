@@ -54,7 +54,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               >
                 <div className="w-10 h-10 flex items-center justify-center shadow-sm">
                   <Image
-                    src="/new-logo.svg"
+                    src="/logo.png"
                     alt="Gangstr"
                     width={32}
                     height={32}
