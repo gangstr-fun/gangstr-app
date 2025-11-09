@@ -381,10 +381,54 @@ model VaultAllocation {
   utilizationRate Float?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
-
-  // Relations
   vaultMetric     VaultMetric @relation(fields: [vaultMetricId], references: [id], onDelete: Cascade)
 
   @@index([vaultMetricId])
   @@index([marketUniqueKey])
+}
+
+model CopyTradeRule {
+  id                String             @id @default(uuid())
+  userWalletAddress String
+  status            String             @default("active")
+  sources           Json
+  condition         Json
+  buySpec           Json
+  sellSpec          Json?
+  riskGuardrails    Json?
+  metadata          Json?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  positions         MirroredPosition[]
+  events            RuleEvent[]
+
+  @@index([userWalletAddress])
+  @@index([status])
+}
+
+model RuleEvent {
+  id        String        @id @default(uuid())
+  ruleId    String
+  type      String
+  details   Json?
+  createdAt DateTime      @default(now())
+  rule      CopyTradeRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+
+  @@index([ruleId])
+  @@index([type])
+}
+
+model MirroredPosition {
+  id               String        @id @default(uuid())
+  ruleId           String
+  tokenAddress     String
+  openQty          String
+  avgEntryPriceUSD Float
+  lastTxHash       String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  rule             CopyTradeRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+
+  @@unique([ruleId, tokenAddress])
+  @@index([tokenAddress])
 }
