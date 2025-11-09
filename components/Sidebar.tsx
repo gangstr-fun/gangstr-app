@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { MessageSquare, Settings, X, Home, TrendingUp } from "lucide-react";
+import { MessageSquare, Settings, X, Home, TrendingUp, PieChart, Search, HelpCircle } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 interface SidebarProps {
@@ -14,17 +14,15 @@ const Sidebar: React.FC<SidebarProps> = ({
   onClose,
 }) => {
   const pathname = usePathname();
-  const proNavItems = [
-    { href: "/pro/dashboard", icon: Home, label: "Dashboard" },
-    { href: "/pro/discover", icon: TrendingUp, label: "Discover" },
-    { href: "/pro/agent/chat", icon: MessageSquare, label: "Agentic Chat" },
-    // { href: "/pro/portfolio", icon: PieChart, label: "Portfolio" },
-    // { href: "/pro/strategy", icon: BarChart3, label: "Strategy" },
-    // { href: "/pro/research/intelligence", icon: TrendingUp, label: "Performance" },
-    // { href: "/pro/research/risk-assessment", icon: CreditCard, label: "Risk Analysis" },
-    { href: "/pro/settings", icon: Settings, label: "Settings" },
+  const navItems = [
+    { href: "/dashboard", icon: Home, label: "Dashboard" },
+    { href: "/discover", icon: TrendingUp, label: "Discover" },
+    { href: "/agent/chat", icon: MessageSquare, label: "Agent Chat" },
+    { href: "/portfolio", icon: PieChart, label: "Portfolio" },
+    { href: "/research", icon: Search, label: "Research" },
+    { href: "/settings", icon: Settings, label: "Settings" },
+    { href: "/support", icon: HelpCircle, label: "Support" },
   ];
-  const navItems = proNavItems;
 
   return (
     <>

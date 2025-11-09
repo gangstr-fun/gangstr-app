@@ -46,7 +46,8 @@
 **/.env.local/
 **/.env.test/
 .env
-.env.local
+.env.local.example
+
 
 # Logs
 logs
