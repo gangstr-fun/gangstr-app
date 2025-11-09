@@ -524,6 +524,18 @@ async function processGeneralAgentInteraction(
       effectiveMessage = `Use the custom WETH provider to wrap ETH to WETH. Call tool: custom_weth.wrap_eth with { "amount": "${amount}" }. Execute the transaction now and return the transaction hash.`;
     }
 
+    // Generic Uniswap swap intent → guide to uniswap.swap
+    const uniswapSwapMatch = userMessage.match(
+      /swap\s+([\d.]+)\s*([a-zA-Z0-9]+)\s*(?:to|->|for)\s*([a-zA-Z0-9]+)(?:.*uniswap)?/i
+    );
+    if (uniswapSwapMatch) {
+      const amount = uniswapSwapMatch[1];
+      const tokenIn = uniswapSwapMatch[2];
+      const tokenOut = uniswapSwapMatch[3];
+      // We support symbols or addresses; provider resolves them per network via TOKENS
+      effectiveMessage = `Use the Uniswap V3 action provider to perform a swap. Call tool: uniswap.swap with { "tokenIn": "${tokenIn}", "tokenOut": "${tokenOut}", "amount": "${amount}", "slippageTolerance": 0.5 }. Execute the swap now on ${chain_id} and return the transaction hash.`;
+    }
+
     // Direct Morpho deposit intent → strongly guide tool usage
     const morphoDepositMatch = userMessage.match(
       /(deposit|supply)\s+([\d.]+)\s*weth\b.*\bmorpho\b/i
