@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import TopUpModal from "@/components/TopUpModal";
 import AutoInvestFlow from "@/components/AutoInvestFlow";
 import { ArrowRight, Zap, Wallet, Shield, Users, TrendingUp } from "lucide-react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 /**
@@ -33,7 +32,7 @@ export default function HomePage() {
       activeWalletAddress &&
       activeWalletStatus === "connected"
     ) {
-      router.push("/pro/dashboard");
+      router.push("/dashboard");
     }
   }, [authenticated, activeWalletAddress, activeWalletStatus, router]);
 
@@ -49,7 +48,7 @@ export default function HomePage() {
       }
     } else if (activeWalletAddress && activeWalletStatus === "connected") {
       // User is authenticated and connected, redirect to dashboard
-      router.push("/pro/dashboard");
+      router.push("/dashboard");
     }
   };
 
@@ -58,13 +57,13 @@ export default function HomePage() {
     setLastTopUpAmount(amount);
     setLastTopUpToken(token);
     // Redirect to dashboard after top-up
-    router.push("/pro/dashboard");
+    router.push("/dashboard");
   };
 
   const handleInvestmentComplete = (success: boolean) => {
     if (success) {
       // Redirect to dashboard after successful investment
-      router.push("/pro/dashboard");
+      router.push("/dashboard");
     }
   };
 

@@ -362,7 +362,7 @@ export default function ProSettingsPage() {
       <div className="border-b border-gray-200">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center space-x-4">
-            <Link href="/pro" className="text-gray-500 hover:text-gray-700">
+            <Link href="/" className="text-gray-500 hover:text-gray-700">
               <ChevronLeft size={20} />
             </Link>
             <div>
@@ -1446,12 +1446,12 @@ export default function ProSettingsPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Link href="/pro/support">
+                  <Link href="/support">
                     <Button variant="outline" className="w-full">
                       Contact Support
                     </Button>
                   </Link>
-                  <Link href="/pro/support#faq">
+                  <Link href="/support#faq">
                     <Button variant="outline" className="w-full">
                       View FAQ
                     </Button>
