@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { createPublicClient, createWalletClient, http, parseUnits, formatUnits } from 'viem';
+import { createPublicClient, createWalletClient, http, formatUnits } from 'viem';
 import { base, mainnet } from 'viem/chains';
 import { privateKeyToAccount, type Account } from 'viem/accounts';
 import { type WalletClient } from 'viem';
@@ -159,7 +159,6 @@ export class InvestmentAutomationService {
       for (const allocation of allocations) {
         try {
           const vaultAddress = allocation.vaultAddress as `0x${string}`;
-          const investmentAmount = parseUnits(allocation.amount.toString(), 18);
 
           console.log(`Investing ${allocation.amount} ${tokenSymbol} in vault ${vaultAddress}`);
 
@@ -186,7 +185,7 @@ export class InvestmentAutomationService {
           await this.recordInvestment({
             userWalletAddress,
             vaultId: allocation.vaultAddress,
-            amountInvested: investmentAmount.toString(),
+            amountInvested: allocation.amount.toString(),
             transactionHash: txHash,
             gasUsed: '0', // Will be updated when we get receipt
           });

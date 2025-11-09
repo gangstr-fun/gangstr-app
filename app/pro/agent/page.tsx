@@ -446,7 +446,7 @@ function AgentCard({ agent }: { agent: AgentConfig }) {
       case "RISK_MANAGEMENT":
         return "🛡️";
       default:
-        return <Image src="/logo.png" alt="Agent" width={20} height={20} />;
+        return <Image src="/logo.png" alt="Agent" width={24} height={24} />;
     }
   };
 
