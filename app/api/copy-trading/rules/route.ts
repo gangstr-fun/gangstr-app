@@ -18,7 +18,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing or invalid x-user-wallet-address header" }, { status: 401 });
     }
 
-    const json = await req.json();
+    const json = await req
+      .json()
+        .catch(() => null);
+    if (!json) {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
     const parsed = CopyTradeRuleCreateSchema.safeParse(json);
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
@@ -33,9 +38,9 @@ export async function POST(req: NextRequest) {
         sources,
         condition,
         buySpec,
-        sellSpec: sellSpec ?? null,
-        riskGuardrails: riskGuardrails ?? null,
-        metadata: metadata ?? null,
+        ...(sellSpec !== undefined ? { sellSpec } : {}),
+        ...(riskGuardrails !== undefined ? { riskGuardrails } : {}),
+        ...(metadata !== undefined ? { metadata } : {}),
       },
     });
 
