@@ -12,6 +12,8 @@ import {
 import { RISK_QUESTIONNAIRE } from "@/lib/risk/constants";
 
 // Use shared questionnaire from lib/risk/constants
+// Feature flag to enable/disable onboarding questionnaire in chat
+const ENABLE_RISK_QUESTIONNAIRE = process.env.ENABLE_RISK_QUESTIONNAIRE === 'true';
 
 /**
  * Handles chat interaction with an agent
@@ -357,6 +359,7 @@ async function processHybridAgentInteraction(
 
     // Check if this is a risk assessment related interaction
     const isRiskAssessmentFlow = (() => {
+      if (!ENABLE_RISK_QUESTIONNAIRE) return false;
       // If this looks like an initial greeting or very first interaction of the session,
       // kick off the risk flow regardless of prior profile.
       const isVeryEarlyConversation = (messageHistory?.length || 0) <= 2;
