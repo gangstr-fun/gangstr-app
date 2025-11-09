@@ -91,6 +91,10 @@ Always use YOUR agent wallet for transactions and when showing wallet details.`;
         ${walletContext}
         `;
     const tools = getVercelAITools(agentkit);
+    try {
+      const toolNames = Object.keys((tools as unknown as Record<string, unknown>) || {});
+      console.log('[AGENT DEBUG] Tools available:', toolNames);
+    } catch {}
 
     agent = {
       tools,
