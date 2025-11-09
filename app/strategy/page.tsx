@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { GlassPanel } from "@/components/ui/glass-panel";
-import { Send, Bot, User, PlusCircle } from "lucide-react";
+import { Send, User, PlusCircle } from "lucide-react";
 import { AgentRequest, AgentResponse } from "@/lib/types/api";
 import { AutomationCard } from "@/components/AutomationCard";
 import { Automation } from "@/lib/types";

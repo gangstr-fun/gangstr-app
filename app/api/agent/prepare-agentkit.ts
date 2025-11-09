@@ -25,6 +25,7 @@ import { moonwellActionProvider } from "@/lib/customActions/moonwell/moonwellAct
 import { enhancedBalanceProvider } from "@/lib/customActions/balanceProvider";
 import { comprehensiveBalanceProvider } from "@/lib/customActions/comprehensiveBalanceProvider";
 import { customWETHProvider } from "@/lib/customActions/wethProvider";
+import { uniswapActionProvider } from "@/lib/customActions/uniswap";
 import { privateKeyToAccount } from "viem/accounts";
 
 /**
@@ -265,6 +266,7 @@ export async function prepareAgentkitAndWalletProvider(
               pythActionProvider(),
               walletActionProvider(),
               erc20ActionProvider(),
+              uniswapActionProvider(),
               enhancedBalanceProvider(),
               comprehensiveBalanceProvider(),
               cdpApiActionProvider({

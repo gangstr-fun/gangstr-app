@@ -8,7 +8,6 @@ import { StatsCards } from "../../components/research/StatsCards";
 import { FiltersPanel } from "../../components/research/FiltersPanel";
 import {
   Send,
-  Bot,
   User,
   Search,
   RefreshCw,
