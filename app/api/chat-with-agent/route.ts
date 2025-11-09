@@ -592,13 +592,13 @@ async function processGeneralAgentInteraction(
 
     if (userMessage.toLowerCase().includes("balance")) {
       fallbackResponse = `I apologize, but I'm having trouble connecting to the blockchain services. Please try again in a moment, or refresh the page and try again.`;
-    } else if (
-      userMessage.toLowerCase().includes("risk") ||
-      userMessage.toLowerCase().includes("portfolio")
-    ) {
-      fallbackResponse = `I can help you with risk assessment! Please say "start risk assessment" to begin the questionnaire.`;
     } else {
-      fallbackResponse = `I'm having trouble processing your request. Please try again, or refresh the page. If the issue persists, please check your wallet connection.`;
+      fallbackResponse = `I'm having trouble processing your request. You can try commands like "Show my balance", "Wrap 0.01 ETH to WETH", or "Deposit 0.01 WETH to Morpho". Please try again, or refresh the page.`;
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+      const errMsg = error instanceof Error ? error.message : String(error);
+      fallbackResponse += `\n\n[dev] ${errMsg}`;
     }
 
     return {
