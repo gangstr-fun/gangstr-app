@@ -180,6 +180,10 @@ export async function POST(req: NextRequest) {
             fee: 3000,
           } as any);
 
+          if (typeof res === "string" && res.toLowerCase().startsWith("error")) {
+            throw new Error(res);
+          }
+
           // Log RuleEvent
           await prisma.ruleEvent.create({
             data: {
