@@ -23,6 +23,7 @@ export const UNISWAP_ADDRESSES: Record<string, Record<string, string>> = {
 export const TOKENS: Record<string, Record<string, `0x${string}`>> = {
   // NOTE: This USDC is a test token on Base Sepolia; adjust if you have a preferred faucet token.
   "base-sepolia": {
+    WETH: "0x4200000000000000000000000000000000000006",
     USDC: "0x036cbd53842c5426634e7929541ec2318f3dcf7e",
   },
   // "base-mainnet": { USDC: "0x833589fCD..." } // Optional: add mainnet mapping if desired

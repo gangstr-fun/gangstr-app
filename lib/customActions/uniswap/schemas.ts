@@ -5,8 +5,8 @@ import { z } from "zod";
  */
 export const SwapSchema = z
   .object({
-    tokenIn: z.string().describe("The contract address of the token to swap from"),
-    tokenOut: z.string().describe("The contract address of the token to swap to"),
+    tokenIn: z.string().describe("Token to swap from (address or common symbol like 'WETH'/'USDC')"),
+    tokenOut: z.string().describe("Token to swap to (address or common symbol like 'WETH'/'USDC')"),
     amount: z.string().describe("The amount of tokenIn to swap (in token units, e.g. '1.5')"),
     slippageTolerance: z
       .number()
@@ -27,8 +27,8 @@ export const SwapSchema = z
  */
 export const QuoteSchema = z
   .object({
-    tokenIn: z.string().describe("The contract address of the token to swap from"),
-    tokenOut: z.string().describe("The contract address of the token to swap to"),
+    tokenIn: z.string().describe("Token to swap from (address or common symbol like 'WETH'/'USDC')"),
+    tokenOut: z.string().describe("Token to swap to (address or common symbol like 'WETH'/'USDC')"),
     amount: z.string().describe("The amount of tokenIn to quote (in token units, e.g. '1.5')"),
     fee: z
       .number()
