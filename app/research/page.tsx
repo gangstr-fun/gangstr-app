@@ -4,8 +4,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { useResearchStore } from "@/lib/stores/research-store";
 // import { GlassPanel } from '@/components/ui/glass-panel';
 import { ProtocolCard } from "@/components/ProtocolCard";
-import { StatsCards } from "../../../components/research/StatsCards";
-import { FiltersPanel } from "../../../components/research/FiltersPanel";
+import { StatsCards } from "../../components/research/StatsCards";
+import { FiltersPanel } from "../../components/research/FiltersPanel";
 import {
   Send,
   Bot,
