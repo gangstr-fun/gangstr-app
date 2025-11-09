@@ -198,7 +198,8 @@ export function useUnifiedWallet(): UnifiedWalletState {
     try {
       // Check if pro wallet exists, create if not
       await fetchProWallet();
-      if (!proWallet.address && proWallet.status !== 'loading') {
+      const latest = cacheRef.current.proWallet.data;
+      if (!latest?.address) {
         await createProWallet();
       }
     } catch (err) {
@@ -206,7 +207,7 @@ export function useUnifiedWallet(): UnifiedWalletState {
     } finally {
       setIsLoading(false);
     }
-  }, [userWalletAddress, fetchProWallet, createProWallet, proWallet.address, proWallet.status]);
+  }, [userWalletAddress, fetchProWallet, createProWallet]);
   
   /**
    * Refresh pro wallet
@@ -254,8 +255,8 @@ export function useUnifiedWallet(): UnifiedWalletState {
   useEffect(() => {
     if (!userWalletAddress || !authenticated) return;
     
-    // Only ensure wallet if it doesn't exist
-    if (proWallet.status === 'idle' || (proWallet.status === 'error' && !proWallet.address)) {
+    // Only ensure wallet if it's idle (avoid retry loops on error)
+    if (proWallet.status === 'idle') {
       const timeoutId = setTimeout(() => {
         ensureWallet();
       }, 200); // Debounce to prevent rapid calls
