@@ -1,4 +1,4 @@
-import { uniswapActionProvider } from "../uniswapActionProvider";
+import { uniswapActionProvider } from "../index";
 
 describe("UniswapActionProvider", () => {
   const actionProvider = uniswapActionProvider();
