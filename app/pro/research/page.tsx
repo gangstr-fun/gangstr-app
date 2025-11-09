@@ -220,7 +220,7 @@ export default function ResearchPage() {
           aria-label={chatOpen ? "Close AI assistant" : "Open AI assistant"}
         >
           <Image
-            src="/new-logo.svg"
+            src="/logo.png"
             alt="Research Assistant"
             width={28}
             height={28}
@@ -233,7 +233,7 @@ export default function ResearchPage() {
             <div className="flex items-center justify-between p-4 border-b border-border">
               <div className="flex items-center">
                 <Image
-                  src="/new-logo.svg"
+                  src="/logo.png"
                   alt="Research Assistant"
                   width={20}
                   height={20}
@@ -261,7 +261,7 @@ export default function ResearchPage() {
                     {msg.sender === "agent" && (
                       <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-[rgba(210,113,254,0.15)] border border-[rgba(210,113,254,0.3)]">
                         <Image
-                          src="/new-logo.svg"
+                          src="/logo.png"
                           alt="Agent"
                           width={16}
                           height={16}
@@ -299,7 +299,7 @@ export default function ResearchPage() {
                   <div className="flex items-start gap-3">
                     <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-[rgba(210,113,254,0.15)] border border-[rgba(210,113,254,0.3)]">
                       <Image
-                        src="/new-logo.svg"
+                        src="/logo.png"
                         alt="Agent"
                         width={16}
                         height={16}

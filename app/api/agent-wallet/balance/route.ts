@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { isAddress, formatEther } from 'viem';
+import { isAddress, formatEther, createPublicClient, http } from 'viem';
+import { base, mainnet } from 'viem/chains';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
@@ -29,7 +30,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Pro-only: lookup smart wallet via mapping and return placeholder balance for now
+    // Pro-only: lookup smart wallet via mapping
     const agentWalletMap = await prisma.agentWalletMap.findUnique({
       where: { userWalletAddress }
     });
@@ -52,8 +53,24 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // TODO: implement onchain balance fetch for smart wallet
-    const balance: bigint = BigInt(0);
+    // Fetch balance from blockchain
+    const chain = chainIdNum === 8453 ? base : chainIdNum === 1 ? mainnet : base;
+    
+    const publicClient = createPublicClient({
+      chain,
+      transport: http()
+    });
+
+    let balance: bigint;
+    try {
+      balance = await publicClient.getBalance({
+        address: agentWallet.smartWalletAddress as `0x${string}`
+      });
+    } catch (error) {
+      console.error('Error fetching balance from blockchain:', error);
+      // Return 0 if balance fetch fails
+      balance = BigInt(0);
+    }
 
     return NextResponse.json({
       success: true,

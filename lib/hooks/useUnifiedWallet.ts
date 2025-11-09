@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { usePrivy } from '@privy-io/react-auth';
 
-export type WalletMode = 'basic' | 'pro';
+export type WalletMode = 'pro';
 
 export interface WalletInfo {
   address: string | null;
@@ -38,32 +38,28 @@ export interface UnifiedWalletState {
 }
 
 /**
- * Unified wallet hook that manages both basic and pro wallets with frontend-driven mode switching
+ * Unified wallet hook that manages pro wallets only
+ * Basic mode has been removed - all users use pro wallets
  */
 export function useUnifiedWallet(): UnifiedWalletState {
   const { user, authenticated, ready } = usePrivy();
   
   // Cache to prevent duplicate API calls
   const cacheRef = useRef<{
-    basicWallet: { data: WalletInfo | null; timestamp: number };
     proWallet: { data: WalletInfo | null; timestamp: number };
   }>({
-    basicWallet: { data: null, timestamp: 0 },
     proWallet: { data: null, timestamp: 0 }
   });
   
-  // Ref to track pending requests
-  const basicWalletRequestPendingRef = useRef(false);
-  
   const CACHE_DURATION = 30000; // 30 seconds cache
   
-  // State management
-  const [walletMode, setWalletMode] = useState<WalletMode>('pro'); // Default to pro (basic removed)
-  const [basicWallet, setBasicWallet] = useState<WalletInfo>({
+  // State management - only pro wallet now
+  const [walletMode] = useState<WalletMode>('pro'); // Always pro mode
+  const [basicWallet] = useState<WalletInfo>({
     address: null,
     status: 'idle',
     walletType: 'EOA'
-  });
+  }); // Empty state for backward compatibility
   const [proWallet, setProWallet] = useState<WalletInfo>({
     address: null,
     status: 'idle',
@@ -76,85 +72,11 @@ export function useUnifiedWallet(): UnifiedWalletState {
   const userWalletAddress = user?.linkedAccounts?.find(account => account.type === 'wallet')?.address || null;
   const userWalletStatus = userWalletAddress ? 'connected' : (authenticated && ready ? 'loading' : 'idle');
   
-  // Derived active wallet info
-  const activeWallet = walletMode === 'basic' ? basicWallet : proWallet;
+  // Derived active wallet info - always pro wallet
+  const activeWallet = proWallet;
   const activeWalletAddress = activeWallet.address;
   const activeWalletStatus = activeWallet.status;
   const activeWalletType = activeWallet.walletType;
-  
-  /**
-   * Fetch basic wallet info with caching
-   */
-  const fetchBasicWallet = useCallback(async () => {
-    if (!userWalletAddress) return;
-    
-    // Check cache first
-    const now = Date.now();
-    const cached = cacheRef.current.basicWallet;
-    if (cached.data && (now - cached.timestamp) < CACHE_DURATION) {
-      console.log('[BASIC WALLET API] Using cached data');
-      setBasicWallet(cached.data);
-      return;
-    }
-    
-    // Prevent duplicate requests
-    if (basicWalletRequestPendingRef.current) {
-      console.log('[BASIC WALLET API] Request already in progress, skipping');
-      return;
-    }
-    
-    basicWalletRequestPendingRef.current = true;
-    
-    try {
-      console.log(`[BASIC WALLET API] Fetching wallet for address: ${userWalletAddress}`);
-      setBasicWallet(prev => ({ ...prev, status: 'loading' }));
-      
-      const response = await fetch(`/api/basic-wallet?userWalletAddress=${userWalletAddress}`);
-      const data = await response.json();
-      
-      let walletInfo: WalletInfo;
-      
-      if (response.ok) {
-        if (data.hasBasicWallet) {
-          walletInfo = {
-            address: data.basicWalletAddress,
-            status: 'connected',
-            walletType: 'EOA'
-          };
-        } else {
-          walletInfo = {
-            address: null,
-            status: 'idle',
-            walletType: 'EOA'
-          };
-        }
-      } else {
-        walletInfo = {
-          address: null,
-          status: 'error',
-          walletType: 'EOA',
-          error: data.error || 'Failed to fetch basic wallet'
-        };
-      }
-      
-      // Update cache and state
-      cacheRef.current.basicWallet = { data: walletInfo, timestamp: now };
-      setBasicWallet(walletInfo);
-      
-    } catch (err) {
-      const errorWallet = {
-        address: null,
-        status: 'error' as const,
-        walletType: 'EOA' as const,
-        error: err instanceof Error ? err.message : 'Unknown error'
-      };
-      
-      cacheRef.current.basicWallet = { data: errorWallet, timestamp: now };
-      setBasicWallet(errorWallet);
-    } finally {
-      basicWalletRequestPendingRef.current = false;
-    }
-  }, [userWalletAddress, basicWallet.status, CACHE_DURATION]);
   
   /**
    * Fetch pro wallet info
@@ -162,84 +84,62 @@ export function useUnifiedWallet(): UnifiedWalletState {
   const fetchProWallet = useCallback(async () => {
     if (!userWalletAddress) return;
     
+    // Check cache first
+    const now = Date.now();
+    const cached = cacheRef.current.proWallet;
+    if (cached.data && (now - cached.timestamp) < CACHE_DURATION) {
+      console.log('[PRO WALLET API] Using cached data');
+      setProWallet(cached.data);
+      return;
+    }
+    
     try {
       setProWallet(prev => ({ ...prev, status: 'loading' }));
       
       const response = await fetch(`/api/agent-wallet?userWalletAddress=${userWalletAddress}`);
       const data = await response.json();
       
+      let walletInfo: WalletInfo;
+      
       if (response.ok) {
         if (data.hasAgentWallet) {
-          setProWallet({
+          walletInfo = {
             address: data.agentWalletAddress,
             status: 'connected',
             walletType: 'Smart Contract'
-          });
+          };
         } else {
-          setProWallet({
+          walletInfo = {
             address: null,
             status: 'idle',
             walletType: 'Smart Contract'
-          });
+          };
         }
       } else {
-        setProWallet({
+        walletInfo = {
           address: null,
           status: 'error',
           walletType: 'Smart Contract',
           error: data.error || 'Failed to fetch pro wallet'
-        });
+        };
       }
+      
+      // Update cache and state
+      cacheRef.current.proWallet = { data: walletInfo, timestamp: now };
+      setProWallet(walletInfo);
+      
     } catch (err) {
-      setProWallet({
+      const errorWallet = {
         address: null,
-        status: 'error',
-        walletType: 'Smart Contract',
+        status: 'error' as const,
+        walletType: 'Smart Contract' as const,
         error: err instanceof Error ? err.message : 'Unknown error'
-      });
+      };
+      
+      cacheRef.current.proWallet = { data: errorWallet, timestamp: now };
+      setProWallet(errorWallet);
     }
-  }, [userWalletAddress]);
-  
-  /**
-   * Create basic wallet
-   */
-  const createBasicWallet = useCallback(async () => {
-    if (!userWalletAddress) return;
-    
-    try {
-      setBasicWallet(prev => ({ ...prev, status: 'loading' }));
-      
-      const response = await fetch('/api/basic-wallet', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userWalletAddress })
-      });
-      
-      const data = await response.json();
-      
-      if (response.ok) {
-        setBasicWallet({
-          address: data.basicWalletAddress,
-          status: 'connected',
-          walletType: 'EOA'
-        });
-      } else {
-        setBasicWallet({
-          address: null,
-          status: 'error',
-          walletType: 'EOA',
-          error: data.error || 'Failed to create basic wallet'
-        });
-      }
-    } catch (err) {
-      setBasicWallet({
-        address: null,
-        status: 'error',
-        walletType: 'EOA',
-        error: err instanceof Error ? err.message : 'Unknown error'
-      });
-    }
-  }, [userWalletAddress]);
+  }, [userWalletAddress, CACHE_DURATION]);
   
   /**
    * Create pro wallet
@@ -258,32 +158,36 @@ export function useUnifiedWallet(): UnifiedWalletState {
       
       const data = await response.json();
       
-      if (response.ok) {
-        setProWallet({
-          address: data.agentWalletAddress,
-          status: 'connected',
-          walletType: 'Smart Contract'
-        });
-      } else {
-        setProWallet({
-          address: null,
-          status: 'error',
-          walletType: 'Smart Contract',
-          error: data.error || 'Failed to create pro wallet'
-        });
-      }
+      const walletInfo: WalletInfo = response.ok ? {
+        address: data.agentWalletAddress,
+        status: 'connected',
+        walletType: 'Smart Contract'
+      } : {
+        address: null,
+        status: 'error',
+        walletType: 'Smart Contract',
+        error: data.error || 'Failed to create pro wallet'
+      };
+      
+      // Update cache
+      cacheRef.current.proWallet = { data: walletInfo, timestamp: Date.now() };
+      setProWallet(walletInfo);
+      
     } catch (err) {
-      setProWallet({
+      const errorWallet: WalletInfo = {
         address: null,
         status: 'error',
         walletType: 'Smart Contract',
         error: err instanceof Error ? err.message : 'Unknown error'
-      });
+      };
+      
+      cacheRef.current.proWallet = { data: errorWallet, timestamp: Date.now() };
+      setProWallet(errorWallet);
     }
   }, [userWalletAddress]);
   
   /**
-   * Ensure the current mode's wallet exists
+   * Ensure the pro wallet exists
    */
   const ensureWallet = useCallback(async () => {
     if (!userWalletAddress) return;
@@ -292,28 +196,20 @@ export function useUnifiedWallet(): UnifiedWalletState {
     setError(null);
     
     try {
-      if (walletMode === 'basic') {
-        // Check if basic wallet exists, create if not
-        await fetchBasicWallet();
-        if (!basicWallet.address && basicWallet.status !== 'loading') {
-          await createBasicWallet();
-        }
-      } else {
-        // Check if pro wallet exists, create if not
-        await fetchProWallet();
-        if (!proWallet.address && proWallet.status !== 'loading') {
-          await createProWallet();
-        }
+      // Check if pro wallet exists, create if not
+      await fetchProWallet();
+      if (!proWallet.address && proWallet.status !== 'loading') {
+        await createProWallet();
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to ensure wallet');
     } finally {
       setIsLoading(false);
     }
-  }, [userWalletAddress, walletMode, fetchBasicWallet, createBasicWallet, fetchProWallet, createProWallet]);
+  }, [userWalletAddress, fetchProWallet, createProWallet, proWallet.address, proWallet.status]);
   
   /**
-   * Refresh both wallets
+   * Refresh pro wallet
    */
   const refreshWallets = useCallback(async () => {
     if (!userWalletAddress) return;
@@ -322,22 +218,19 @@ export function useUnifiedWallet(): UnifiedWalletState {
     setError(null);
     
     try {
-      await Promise.all([
-        fetchBasicWallet(),
-        fetchProWallet()
-      ]);
+      await fetchProWallet();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to refresh wallets');
+      setError(err instanceof Error ? err.message : 'Failed to refresh wallet');
     } finally {
       setIsLoading(false);
     }
-  }, [userWalletAddress, fetchBasicWallet, fetchProWallet]);
+  }, [userWalletAddress, fetchProWallet]);
   
   /**
-   * Switch wallet mode
+   * Switch wallet mode (no-op, always pro mode)
    */
   const switchMode = useCallback((mode: WalletMode) => {
-    setWalletMode(mode);
+    // Always pro mode, no switching needed
     setError(null);
   }, []);
   
@@ -345,11 +238,10 @@ export function useUnifiedWallet(): UnifiedWalletState {
   useEffect(() => {
     if (!userWalletAddress || !authenticated) return;
     
-    // Only fetch if we don't have cached data or wallet info
-    const hasBasicCache = cacheRef.current.basicWallet.data !== null;
+    // Only fetch if we don't have cached data
     const hasProCache = cacheRef.current.proWallet.data !== null;
     
-    if (!hasBasicCache || !hasProCache) {
+    if (!hasProCache) {
       const timeoutId = setTimeout(() => {
         refreshWallets();
       }, 100); // Small debounce to prevent rapid calls
@@ -358,21 +250,19 @@ export function useUnifiedWallet(): UnifiedWalletState {
     }
   }, [userWalletAddress, authenticated, refreshWallets]);
   
-  // Auto-ensure wallet when mode changes (only if needed)
+  // Auto-ensure wallet when needed
   useEffect(() => {
     if (!userWalletAddress || !authenticated) return;
     
-    const currentWallet = walletMode === 'basic' ? basicWallet : proWallet;
-    
-    // Only ensure wallet if current mode wallet doesn't exist
-    if (currentWallet.status === 'idle' || (currentWallet.status === 'error' && !currentWallet.address)) {
+    // Only ensure wallet if it doesn't exist
+    if (proWallet.status === 'idle' || (proWallet.status === 'error' && !proWallet.address)) {
       const timeoutId = setTimeout(() => {
         ensureWallet();
       }, 200); // Debounce to prevent rapid calls
       
       return () => clearTimeout(timeoutId);
     }
-  }, [walletMode, userWalletAddress, authenticated, basicWallet.status, basicWallet.address, proWallet.status, proWallet.address, ensureWallet]);
+  }, [userWalletAddress, authenticated, proWallet.status, proWallet.address, ensureWallet]);
   
   return {
     // Active wallet info

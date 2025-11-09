@@ -4,7 +4,6 @@ import { RebalancingSchedulerService } from './RebalancingSchedulerService';
 import { InvestmentAutomationService } from './InvestmentAutomationService';
 import { MorphoAPIService } from './MorphoAPIService';
 import { VaultManagementService } from './VaultManagementService';
-import { BasicAgentWalletService } from './BasicAgentWalletService';
 import * as cron from 'node-cron';
 
 interface DailyRebalanceResult {
@@ -27,7 +26,6 @@ export class DailyRebalancingService {
   private investmentAutomation: InvestmentAutomationService;
   private morphoAPI: MorphoAPIService;
   private vaultManagementService: VaultManagementService;
-  private basicAgentWalletService: BasicAgentWalletService;
   private isRunning: boolean = false;
   private cronJob: cron.ScheduledTask | null = null;
 
@@ -36,12 +34,10 @@ export class DailyRebalancingService {
     this.vaultDataFetcher = new VaultDataFetcherService();
     this.vaultManagementService = new VaultManagementService();
     this.investmentAutomation = new InvestmentAutomationService();
-    this.basicAgentWalletService = BasicAgentWalletService.getInstance();
     this.rebalancingScheduler = new RebalancingSchedulerService(
       this.prisma,
       this.vaultManagementService,
-      this.investmentAutomation,
-      this.basicAgentWalletService
+      this.investmentAutomation
     );
     this.morphoAPI = new MorphoAPIService();
   }

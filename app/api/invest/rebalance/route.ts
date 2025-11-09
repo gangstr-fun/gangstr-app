@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import InvestmentAutomationService from '@/lib/services/InvestmentAutomationService';
-import { basicAgentWalletService } from '@/lib/services/BasicAgentWalletService';
+import { AgentWalletService } from '@/lib/services/agent-wallet-service';
 
 const investmentService = new InvestmentAutomationService();
 
@@ -40,13 +40,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user has a basic agent wallet
-    const walletInfo = await basicAgentWalletService.getBasicWallet(userWalletAddress);
-    if (!walletInfo) {
+    // Check if user has a pro agent wallet
+    const hasProWallet = await AgentWalletService.hasAgentWallet(userWalletAddress);
+    if (!hasProWallet) {
       return NextResponse.json(
         {
           success: false,
-          error: 'No agent wallet found for user. Please create a wallet first.',
+          error: 'No pro wallet found for user. Please create a wallet first.',
         },
         { status: 404 }
       );

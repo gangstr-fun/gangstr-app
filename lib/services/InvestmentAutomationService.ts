@@ -1,11 +1,14 @@
 import { PrismaClient } from '@prisma/client';
-import { createPublicClient, createWalletClient, http, parseUnits, formatUnits } from 'viem';
+import { createPublicClient, createWalletClient, http, formatUnits } from 'viem';
 import { base, mainnet } from 'viem/chains';
-import { privateKeyToAccount } from 'viem/accounts';
+import { privateKeyToAccount, type Account } from 'viem/accounts';
+import { type WalletClient } from 'viem';
+import { SmartWalletProvider, type EvmWalletProvider } from '@coinbase/agentkit';
 import VaultManagementService from './VaultManagementService';
-import { BasicAgentWalletService, basicAgentWalletService } from './BasicAgentWalletService';
+import { AgentWalletService } from './agent-wallet-service';
 import { morphoActionProvider } from '../customActions/Morpho/morphoActionProvider';
 import { VaultDataFetcherService } from './VaultDataFetcherService';
+import { prisma } from '../prisma';
 
 interface InvestmentAllocation {
   vaultAddress: string;
@@ -32,10 +35,17 @@ interface RebalanceOperation {
   priority: number;
 }
 
+interface ProWalletWithAccount {
+  account: Account;
+  walletClient: WalletClient;
+  evmWalletProvider: EvmWalletProvider;
+  agentWalletAddress: string;
+  smartWalletAddress?: string;
+}
+
 export class InvestmentAutomationService {
   private prisma: PrismaClient;
   private vaultService: VaultManagementService;
-  private walletService: BasicAgentWalletService;
   private vaultDataFetcher: VaultDataFetcherService;
   private readonly SUPPORTED_CHAINS = {
     1: mainnet,
@@ -45,8 +55,59 @@ export class InvestmentAutomationService {
   constructor() {
     this.prisma = new PrismaClient();
     this.vaultService = new VaultManagementService();
-    this.walletService = basicAgentWalletService;
     this.vaultDataFetcher = new VaultDataFetcherService();
+  }
+
+  /**
+   * Get pro wallet with account for transactions
+   * Uses AgentWalletService to get smart wallet signer and creates EvmWalletProvider
+   */
+  private async getProWalletWithAccount(userWalletAddress: string, chainId: number = 8453): Promise<ProWalletWithAccount> {
+    try {
+      // Get or create pro wallet (smart wallet)
+      const walletData = await AgentWalletService.getOrCreateSmartWallet(userWalletAddress);
+      
+      if (!walletData.signerPrivateKey) {
+        throw new Error('Pro wallet signer private key not found');
+      }
+
+      // Create account from signer private key
+      const account = privateKeyToAccount(walletData.signerPrivateKey);
+
+      // Get chain configuration
+      const chain = this.SUPPORTED_CHAINS[chainId as keyof typeof this.SUPPORTED_CHAINS];
+      if (!chain) {
+        throw new Error(`Unsupported chain ID: ${chainId}`);
+      }
+
+      // Create wallet client
+      const walletClient = createWalletClient({
+        account,
+        chain,
+        transport: http()
+      });
+
+      // Create EvmWalletProvider (SmartWalletProvider) for morpho actions
+      const networkId = chainId === 8453 ? 'base-mainnet' : chainId === 1 ? 'mainnet' : 'base-mainnet';
+      const evmWalletProvider = await SmartWalletProvider.configureWithWallet({
+        networkId,
+        signer: account,
+        smartWalletAddress: walletData.smartWalletAddress || undefined,
+      });
+
+      // Get agent wallet address (signer address or smart wallet address)
+      const agentWalletAddress = walletData.smartWalletAddress || account.address;
+
+      return {
+        account,
+        walletClient,
+        evmWalletProvider,
+        agentWalletAddress,
+        smartWalletAddress: walletData.smartWalletAddress
+      };
+    } catch (error) {
+      throw new Error(`Failed to get pro wallet with account: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   /**
@@ -62,13 +123,9 @@ export class InvestmentAutomationService {
     try {
       console.log(`Starting auto-investment for ${userWalletAddress}: ${amount} ${tokenSymbol} on chain ${chainId}`);
 
-      // Get user's basic agent wallet with account
-      const walletWithAccount = await this.walletService.getWalletWithAccount(userWalletAddress, chainId);
-      if (!walletWithAccount) {
-        throw new Error('Agent wallet not found for user');
-      }
-      
-      const { account, walletClient } = walletWithAccount;
+      // Get user's pro wallet with account
+      const walletWithAccount = await this.getProWalletWithAccount(userWalletAddress, chainId);
+      const { account, walletClient, evmWalletProvider } = walletWithAccount;
 
       // Calculate optimal allocation
       const amountNumber = parseFloat(formatUnits(BigInt(amount), 18)); // Assuming 18 decimals for now
@@ -102,13 +159,12 @@ export class InvestmentAutomationService {
       for (const allocation of allocations) {
         try {
           const vaultAddress = allocation.vaultAddress as `0x${string}`;
-          const investmentAmount = parseUnits(allocation.amount.toString(), 18);
 
           console.log(`Investing ${allocation.amount} ${tokenSymbol} in vault ${vaultAddress}`);
 
           // Use MorphoActionProvider to execute deposit
           const morphoProvider = morphoActionProvider();
-          const depositResult = await morphoProvider.deposit(walletClient, {
+          const depositResult = await morphoProvider.deposit(evmWalletProvider, {
             assets: allocation.amount.toString()
           });
 
@@ -129,7 +185,7 @@ export class InvestmentAutomationService {
           await this.recordInvestment({
             userWalletAddress,
             vaultId: allocation.vaultAddress,
-            amountInvested: investmentAmount.toString(),
+            amountInvested: allocation.amount.toString(),
             transactionHash: txHash,
             gasUsed: '0', // Will be updated when we get receipt
           });
@@ -329,19 +385,25 @@ export class InvestmentAutomationService {
     userWalletAddress: string,
     operations: RebalanceOperation[]
   ): Promise<void> {
-    // Get user's agent wallet
-    const agentWallet = await this.walletService.getBasicWallet(userWalletAddress);
-    if (!agentWallet) {
-      throw new Error('Agent wallet not found');
+    // Check if pro wallet exists
+    const hasProWallet = await AgentWalletService.hasAgentWallet(userWalletAddress);
+    if (!hasProWallet) {
+      throw new Error('Pro wallet not found for user');
+    }
+
+    // Get pro wallet address for receiver
+    const agentWalletAddress = await AgentWalletService.getAgentWalletAddress(userWalletAddress);
+    if (!agentWalletAddress) {
+      throw new Error('Pro wallet address not found');
     }
 
     // Execute withdrawals first, then deposits
     for (const operation of operations) {
       try {
         if (operation.type === 'withdraw') {
-          await this.executeWithdrawal(agentWallet, operation);
+          await this.executeWithdrawal(userWalletAddress, operation, agentWalletAddress);
         } else {
-          await this.executeDeposit(agentWallet, operation);
+          await this.executeDeposit(userWalletAddress, operation);
         }
       } catch (error) {
         console.error(`Failed to execute ${operation.type} operation:`, error);
@@ -463,28 +525,20 @@ export class InvestmentAutomationService {
     }
   }
 
-  private async executeWithdrawal(agentWallet: any, operation: RebalanceOperation): Promise<void> {
+  private async executeWithdrawal(userWalletAddress: string, operation: RebalanceOperation, agentWalletAddress: string): Promise<void> {
     try {
       console.log(`Executing withdrawal: ${operation.amount} from ${operation.vaultAddress}`);
       
-      // Get wallet client for the agent wallet
-      const walletWithAccount = await this.walletService.getWalletWithAccount(
-        agentWallet.userWalletAddress, 
-        agentWallet.chainId || 8453
-      );
-      
-      if (!walletWithAccount) {
-        throw new Error('Agent wallet client not found');
-      }
-      
-      const { walletClient } = walletWithAccount;
+      // Get pro wallet with account
+      const walletWithAccount = await this.getProWalletWithAccount(userWalletAddress, 8453);
+      const { evmWalletProvider } = walletWithAccount;
       
       // Use MorphoActionProvider to execute withdrawal
       const morphoProvider = morphoActionProvider();
-      const withdrawResult = await morphoProvider.withdraw(walletClient, {
+      const withdrawResult = await morphoProvider.withdraw(evmWalletProvider, {
         vaultAddress: operation.vaultAddress,
         assets: operation.amount,
-        receiver: agentWallet.agentWalletAddress
+        receiver: agentWalletAddress
       });
       
       // Check if withdrawal was successful
@@ -502,7 +556,7 @@ export class InvestmentAutomationService {
       
       // Update user investment record to reflect withdrawal
       await this.updateInvestmentAfterWithdrawal({
-        userWalletAddress: agentWallet.userWalletAddress,
+        userWalletAddress,
         vaultAddress: operation.vaultAddress,
         amountWithdrawn: operation.amount,
         transactionHash: txHash || 'unknown'
@@ -516,25 +570,17 @@ export class InvestmentAutomationService {
     }
   }
 
-  private async executeDeposit(agentWallet: any, operation: RebalanceOperation): Promise<void> {
+  private async executeDeposit(userWalletAddress: string, operation: RebalanceOperation): Promise<void> {
     try {
       console.log(`Executing deposit: ${operation.amount} to ${operation.vaultAddress}`);
       
-      // Get wallet client for the agent wallet
-      const walletWithAccount = await this.walletService.getWalletWithAccount(
-        agentWallet.userWalletAddress, 
-        agentWallet.chainId || 8453
-      );
-      
-      if (!walletWithAccount) {
-        throw new Error('Agent wallet client not found');
-      }
-      
-      const { walletClient } = walletWithAccount;
+      // Get pro wallet with account
+      const walletWithAccount = await this.getProWalletWithAccount(userWalletAddress, 8453);
+      const { evmWalletProvider } = walletWithAccount;
       
       // Use MorphoActionProvider to execute deposit
       const morphoProvider = morphoActionProvider();
-      const depositResult = await morphoProvider.deposit(walletClient, {
+      const depositResult = await morphoProvider.deposit(evmWalletProvider, {
         assets: operation.amount
       });
       
@@ -553,7 +599,7 @@ export class InvestmentAutomationService {
       
       // Record the new investment
       await this.recordInvestment({
-        userWalletAddress: agentWallet.userWalletAddress,
+        userWalletAddress,
         vaultId: operation.vaultAddress, // Using vault address as ID for now
         amountInvested: operation.amount,
         transactionHash: txHash || 'unknown',

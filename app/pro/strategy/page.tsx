@@ -135,7 +135,7 @@ export default function AutomationPage() {
         className="fixed bottom-24 sm:bottom-6 right-6 bg-primary-500 hover:bg-primary-600 text-white rounded-full p-4 shadow-lg z-50 transition-transform hover:scale-110"
       >
         <Image
-          src="/new-logo.svg"
+          src="/logo.png"
           alt="Automation Assistant"
           width={32}
           height={32}
@@ -156,7 +156,7 @@ export default function AutomationPage() {
                 >
                   {msg.sender === "agent" && (
                     <Image
-                      src="/new-logo.svg"
+                      src="/logo.png"
                       alt="Agent"
                       width={24}
                       height={24}
@@ -180,7 +180,7 @@ export default function AutomationPage() {
               {isChatLoading && (
                 <div className="flex items-start gap-3">
                   <Image
-                    src="/new-logo.svg"
+                    src="/logo.png"
                     alt="Agent"
                     width={24}
                     height={24}

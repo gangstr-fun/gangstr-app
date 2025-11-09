@@ -1,8 +1,3 @@
-export interface BasicWalletCardProps {
-    onUpgrade?: () => void;
-    showUpgradeOption?: boolean;
-}
-
 export interface WalletStats {
     balance: string;
     transactionCount: number;

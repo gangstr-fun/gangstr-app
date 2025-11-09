@@ -42,60 +42,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get user profile to determine wallet tier
-    const userProfile = await prisma.userProfile.findUnique({
-      where: { userWalletAddress },
-      select: {
-        userWalletAddress: true,
-        basicWalletAddress: true,
-        proWalletAddress: true
-      }
+    // Get pro agent wallet (smart wallet) - basic mode removed
+    const walletMapping = await prisma.agentWalletMap.findUnique({
+      where: { userWalletAddress }
     });
 
-    // Determine if using basic wallet (default to basic if no pro wallet)
-    const isBasicWallet = !userProfile?.proWalletAddress || userProfile?.basicWalletAddress === userWalletAddress;
-    let agentWalletAddress: string;
-
-    if (isBasicWallet) {
-      // Get basic agent wallet
-      const basicWallet = await prisma.basicAgentWallet.findUnique({
-        where: { userWalletAddress }
-      });
-
-      if (!basicWallet) {
-        return NextResponse.json(
-          { error: 'Basic agent wallet not found. Please create wallet first.' },
-          { status: 404 }
-        );
-      }
-
-      agentWalletAddress = basicWallet.agentWalletAddress;
-    } else {
-      // Get pro agent wallet (smart wallet)
-      const walletMapping = await prisma.agentWalletMap.findUnique({
-        where: { userWalletAddress }
-      });
-
-      if (!walletMapping) {
-        return NextResponse.json(
-          { error: 'Pro agent wallet not found. Please create wallet first.' },
-          { status: 404 }
-        );
-      }
-
-      const userWallet = await prisma.agentWallet.findUnique({
-        where: { agent_id: walletMapping.agent_id }
-      });
-
-      if (!userWallet || !userWallet.smartWalletAddress) {
-        return NextResponse.json(
-          { error: 'Pro agent wallet not found.' },
-          { status: 404 }
-        );
-      }
-
-      agentWalletAddress = userWallet.smartWalletAddress;
+    if (!walletMapping) {
+      return NextResponse.json(
+        { error: 'Pro agent wallet not found. Please create wallet first.' },
+        { status: 404 }
+      );
     }
+
+    const userWallet = await prisma.agentWallet.findUnique({
+      where: { agent_id: walletMapping.agent_id }
+    });
+
+    if (!userWallet) {
+      return NextResponse.json(
+        { error: 'Pro agent wallet not found.' },
+        { status: 404 }
+      );
+    }
+
+    // Use smart wallet address if available, otherwise use signer address
+    const agentWalletAddress = userWallet.smartWalletAddress || userWallet.walletPublicKey;
 
     // Fetch current best Morpho vaults
     const vaults = await fetchMorphoVaults();

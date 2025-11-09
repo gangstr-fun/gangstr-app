@@ -30,7 +30,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
           href="https://gangstr.xyz"
           className="lg:hidden flex items-center space-x-2 hover:opacity-80 transition-opacity cursor-pointer"
         >
-          <Image src="/new-logo.svg" alt="Gangstr" width={28} height={28} />
+          <Image src="/logo.png" alt="Gangstr" width={28} height={28} />
           <span className="text-lg font-semibold gradient-text">Gangstr</span>
         </a>
       </div>

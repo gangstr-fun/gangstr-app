@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { MessageSquare, Settings, X, Home } from "lucide-react";
+import { MessageSquare, Settings, X, Home, TrendingUp } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 interface SidebarProps {
@@ -16,6 +16,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const pathname = usePathname();
   const proNavItems = [
     { href: "/pro/dashboard", icon: Home, label: "Dashboard" },
+    { href: "/pro/discover", icon: TrendingUp, label: "Discover" },
     { href: "/pro/agent/chat", icon: MessageSquare, label: "Agentic Chat" },
     // { href: "/pro/portfolio", icon: PieChart, label: "Portfolio" },
     // { href: "/pro/strategy", icon: BarChart3, label: "Strategy" },
@@ -54,7 +55,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               >
                 <div className="w-10 h-10 flex items-center justify-center shadow-sm">
                   <Image
-                    src="/new-logo.svg"
+                    src="/logo.png"
                     alt="Gangstr"
                     width={32}
                     height={32}

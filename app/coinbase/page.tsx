@@ -75,7 +75,7 @@ export default function Home() {
           {isThinking && (
             <div className="text-right mr-2 text-gray-500 italic flex items-center justify-end gap-2">
               <Image
-                src="/new-logo.svg"
+                src="/logo.png"
                 alt="Thinking"
                 width={16}
                 height={16}

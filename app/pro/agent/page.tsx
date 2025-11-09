@@ -202,7 +202,7 @@ export default function AgentDashboardPage() {
           subtitle={`of ${agents.length} total`}
           icon={
             <Image
-              src="/new-logo.svg"
+              src="/logo.png"
               alt="Agent"
               width={24}
               height={24}
@@ -446,7 +446,7 @@ function AgentCard({ agent }: { agent: AgentConfig }) {
       case "RISK_MANAGEMENT":
         return "🛡️";
       default:
-        return <Image src="/new-logo.svg" alt="Agent" width={20} height={20} />;
+        return <Image src="/logo.png" alt="Agent" width={24} height={24} />;
     }
   };
 

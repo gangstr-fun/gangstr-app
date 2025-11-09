@@ -25,7 +25,7 @@ import { useRouter } from "next/navigation";
 import type { LinkedAccountWithMetadata } from "@privy-io/react-auth";
 
 /**
- * Basic Mode Settings Page - Simple user settings
+ * Settings Page - User settings
  * Focuses on essential settings like profile, notifications, and security
  */
 export default function SettingsPage() {
