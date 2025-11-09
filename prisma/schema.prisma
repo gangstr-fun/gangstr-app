@@ -160,7 +160,7 @@ model AgentWallet {
   agent_id           String   @id @unique
   walletPrivateKey   String
   walletPublicKey    String
-  smartWalletAddress String?  // Coinbase smart wallet address (created on-chain)
+  smartWalletAddress String?
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 }
@@ -173,28 +173,28 @@ model AgentSession {
 }
 
 model UserProfile {
-  userWalletAddress   String    @id @unique
-  risk_profile        String    @default("")
-  other_user_info     String    @default("")
-  basicWalletId       String?
-  proWalletId         String?
-  basicWalletAddress  String?   // EOA address from BasicAgentWallet
-  proWalletAddress    String?   // Smart wallet address from CDP
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  userWalletAddress  String   @id @unique
+  risk_profile       String   @default("")
+  other_user_info    String   @default("")
+  basicWalletId      String?
+  proWalletId        String?
+  basicWalletAddress String?
+  proWalletAddress   String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 }
 
 model BasicAgentWallet {
-  id                   String    @id @default(uuid())
-  userWalletAddress    String    @unique
-  agentWalletAddress   String    @unique
-  encryptedPrivateKey  String
-  encryptionSalt       String
-  walletType           String    @default("basic")
-  status               String    @default("active")
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
-  lastUsedAt           DateTime?
+  id                  String    @id @default(uuid())
+  userWalletAddress   String    @unique
+  agentWalletAddress  String    @unique
+  encryptedPrivateKey String
+  encryptionSalt      String
+  walletType          String    @default("basic")
+  status              String    @default("active")
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  lastUsedAt          DateTime?
 
   @@index([userWalletAddress])
   @@index([agentWalletAddress])
@@ -202,149 +202,134 @@ model BasicAgentWallet {
 }
 
 model WalletUsageStats {
-  id                  String    @id @default(uuid())
-  walletId            String
-  walletType          String
-  transactionCount    Int       @default(0)
-  totalGasUsed        Decimal   @default(0) @db.Decimal(20, 8)
-  totalVolumeUsd      Decimal   @default(0) @db.Decimal(20, 2)
-  lastTransactionAt   DateTime?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  id                String    @id @default(uuid())
+  walletId          String
+  walletType        String
+  transactionCount  Int       @default(0)
+  totalGasUsed      Decimal   @default(0) @db.Decimal(20, 8)
+  totalVolumeUsd    Decimal   @default(0) @db.Decimal(20, 2)
+  lastTransactionAt DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   @@index([walletId])
   @@index([walletType])
 }
 
-// Morpho Vault Models
 model MorphoVault {
-  id              String          @id @default(uuid())
-  address         String          @unique
-  chainId         Int
-  name            String
-  symbol          String
-  tokenAddress    String
-  tokenSymbol     String
-  tokenDecimals   Int
-  isWhitelisted   Boolean         @default(false)
-  riskScore       Int             @default(50)
-  description     String?
-  curatorName     String?
-  curatorImage    String?
-  forumLink       String?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  lastSyncAt      DateTime        @default(now())
-  
-  // Relations
-  metrics         VaultMetric[]
-  investments     UserInvestment[]
+  id            String           @id @default(uuid())
+  address       String           @unique
+  chainId       Int
+  name          String
+  symbol        String
+  tokenAddress  String
+  tokenSymbol   String
+  tokenDecimals Int
+  isWhitelisted Boolean          @default(false)
+  riskScore     Int              @default(50)
+  description   String?
+  curatorName   String?
+  curatorImage  String?
+  forumLink     String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  lastSyncAt    DateTime         @default(now())
+  investments   UserInvestment[]
+  metrics       VaultMetric[]
 
+  @@unique([address, chainId])
   @@index([chainId])
   @@index([tokenAddress])
   @@index([isWhitelisted])
   @@index([riskScore])
-  @@unique([address, chainId])
 }
 
 model VaultMetric {
-  id                    String      @id @default(uuid())
-  vaultId               String
-  date                  DateTime    @default(now())
-  apy                   Float
-  netApy                Float
-  netApyWithoutRewards  Float?
-  dailyApy              Float?
-  dailyNetApy           Float?
-  weeklyApy             Float?
-  weeklyNetApy          Float?
-  monthlyApy            Float?
-  monthlyNetApy         Float?
-  totalAssets           String      // BigInt as string
-  totalAssetsUsd        Float
-  totalSupply           String      // BigInt as string
-  sharePrice            Float
-  sharePriceUsd         Float
-  tvlUsd                Float
-  utilizationRate       Float?
-  
-  // Additional Morpho-specific metrics
-  supplyAssets          String?     // BigInt as string
-  supplyAssetsUsd       Float?
-  borrowAssets          String?     // BigInt as string
-  borrowAssetsUsd       Float?
-  fee                   Float?
-  
-  // Performance tracking
-  performanceScore      Float?      // Calculated performance score
-  riskAdjustedReturn    Float?      // Risk-adjusted return metric
-  volatility            Float?      // Price volatility
-  sharpeRatio           Float?      // Risk-adjusted performance
-  
-  // Market data
-  marketCount           Int?        // Number of underlying markets
-  avgMarketUtilization  Float?      // Average utilization across markets
-  
-  // Relations
-  vault                 MorphoVault @relation(fields: [vaultId], references: [id], onDelete: Cascade)
-  rewards               VaultReward[]
-  allocations           VaultAllocation[]
+  id                   String            @id @default(uuid())
+  vaultId              String
+  date                 DateTime          @default(now())
+  apy                  Float
+  netApy               Float
+  netApyWithoutRewards Float?
+  dailyApy             Float?
+  dailyNetApy          Float?
+  weeklyApy            Float?
+  weeklyNetApy         Float?
+  monthlyApy           Float?
+  monthlyNetApy        Float?
+  totalAssets          String
+  totalAssetsUsd       Float
+  totalSupply          String
+  sharePrice           Float
+  sharePriceUsd        Float
+  tvlUsd               Float
+  utilizationRate      Float?
+  supplyAssets         String?
+  supplyAssetsUsd      Float?
+  borrowAssets         String?
+  borrowAssetsUsd      Float?
+  fee                  Float?
+  performanceScore     Float?
+  riskAdjustedReturn   Float?
+  volatility           Float?
+  sharpeRatio          Float?
+  marketCount          Int?
+  avgMarketUtilization Float?
+  allocations          VaultAllocation[]
+  vault                MorphoVault       @relation(fields: [vaultId], references: [id], onDelete: Cascade)
+  rewards              VaultReward[]
 
+  @@unique([vaultId, date])
   @@index([vaultId])
   @@index([date])
   @@index([apy])
   @@index([tvlUsd])
   @@index([performanceScore])
-  @@unique([vaultId, date])
 }
 
 model UserInvestment {
-  id                    String      @id @default(uuid())
-  userWalletAddress     String
-  vaultId               String
-  amountInvested        String      // BigInt as string
-  sharesReceived        String      // BigInt as string
-  currentValue          Float
-  currentShares         String      // BigInt as string
-  averageEntryPrice     Float
-  totalDeposits         Float       @default(0)
-  totalWithdrawals      Float       @default(0)
-  realizedPnl           Float       @default(0)
-  unrealizedPnl         Float       @default(0)
-  status                String      @default("active") // active, withdrawn, partial
-  firstInvestmentAt     DateTime    @default(now())
-  lastTransactionAt     DateTime    @default(now())
-  createdAt             DateTime    @default(now())
-  updatedAt             DateTime    @updatedAt
-  
-  // Relations
-  vault                 MorphoVault @relation(fields: [vaultId], references: [id], onDelete: Cascade)
+  id                String      @id @default(uuid())
+  userWalletAddress String
+  vaultId           String
+  amountInvested    String
+  sharesReceived    String
+  currentValue      Float
+  currentShares     String
+  averageEntryPrice Float
+  totalDeposits     Float       @default(0)
+  totalWithdrawals  Float       @default(0)
+  realizedPnl       Float       @default(0)
+  unrealizedPnl     Float       @default(0)
+  status            String      @default("active")
+  firstInvestmentAt DateTime    @default(now())
+  lastTransactionAt DateTime    @default(now())
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  vault             MorphoVault @relation(fields: [vaultId], references: [id], onDelete: Cascade)
 
+  @@unique([userWalletAddress, vaultId])
   @@index([userWalletAddress])
   @@index([vaultId])
   @@index([status])
-  @@unique([userWalletAddress, vaultId])
 }
 
 model RebalanceJob {
-  id                    String      @id @default(uuid())
-  userWalletAddress     String
-  scheduledAt           DateTime
-  executedAt            DateTime?
-  status                String      @default("pending") // pending, in_progress, completed, failed
-  jobType               String      @default("daily") // daily, manual, emergency
-  fromVaults            Json        // Array of {vaultId, amount}
-  toVaults              Json        // Array of {vaultId, amount}
-  totalAmount           Float
-  gasUsed               String?     // BigInt as string
-  transactionHashes     String[]    @default([])
-  errorMessage          String?
-  retryCount            Int         @default(0)
-  maxRetries            Int         @default(3)
-  createdAt             DateTime    @default(now())
-  updatedAt             DateTime    @updatedAt
-  
-  // Note: RebalanceJob references vaults via JSON fields (fromVaults, toVaults)
+  id                String    @id @default(uuid())
+  userWalletAddress String
+  scheduledAt       DateTime
+  executedAt        DateTime?
+  status            String    @default("pending")
+  jobType           String    @default("daily")
+  fromVaults        Json
+  toVaults          Json
+  totalAmount       Float
+  gasUsed           String?
+  transactionHashes String[]  @default([])
+  errorMessage      String?
+  retryCount        Int       @default(0)
+  maxRetries        Int       @default(3)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   @@index([userWalletAddress])
   @@index([scheduledAt])
@@ -353,18 +338,16 @@ model RebalanceJob {
 }
 
 model VaultReward {
-  id              String      @id @default(uuid())
-  vaultMetricId   String
-  assetAddress    String
-  chainId         Int
-  supplyApr       Float
-  borrowApr       Float?
+  id                 String      @id @default(uuid())
+  vaultMetricId      String
+  assetAddress       String
+  chainId            Int
+  supplyApr          Float
+  borrowApr          Float?
   yearlySupplyTokens Float?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-
-  // Relations
-  vaultMetric     VaultMetric @relation(fields: [vaultMetricId], references: [id], onDelete: Cascade)
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+  vaultMetric        VaultMetric @relation(fields: [vaultMetricId], references: [id], onDelete: Cascade)
 
   @@index([vaultMetricId])
   @@index([assetAddress, chainId])
