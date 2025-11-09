@@ -17,6 +17,18 @@ export const UNISWAP_ADDRESSES: Record<string, Record<string, string>> = {
 };
 
 /**
+ * Common token symbols per network. These are best-effort testnet defaults.
+ * You can override at runtime by passing explicit addresses to the tool.
+ */
+export const TOKENS: Record<string, Record<string, `0x${string}`>> = {
+  // NOTE: This USDC is a test token on Base Sepolia; adjust if you have a preferred faucet token.
+  "base-sepolia": {
+    USDC: "0x036cbd53842c5426634e7929541ec2318f3dcf7e",
+  },
+  // "base-mainnet": { USDC: "0x833589fCD..." } // Optional: add mainnet mapping if desired
+};
+
+/**
  * Uniswap V3 Quoter contract ABI (subset for quoting)
  */
 export const UNISWAP_QUOTER_ABI: Abi = [

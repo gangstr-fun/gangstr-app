@@ -50,12 +50,11 @@ export class UniswapActionProvider extends ActionProvider<EvmWalletProvider> {
     try {
       const network = walletProvider.getNetwork();
       const addresses = UNISWAP_ADDRESSES[network.networkId!];
-      
+
       if (!addresses) {
         return `Error: Uniswap not supported on network ${network.networkId}`;
       }
 
-      // Get token decimals for proper amount conversion
       const [tokenInDecimals, tokenOutDecimals, tokenInSymbol, tokenOutSymbol] = await Promise.all([
         walletProvider.readContract({
           address: getAddress(args.tokenIn),
@@ -79,114 +78,19 @@ export class UniswapActionProvider extends ActionProvider<EvmWalletProvider> {
           address: getAddress(args.tokenOut),
           abi: ERC20_ABI,
           functionName: "symbol",
-          args: [],
-        }),
-      ]);
-
-      // Convert amount to wei using token decimals
-      const amountIn = parseUnits(args.amount, tokenInDecimals as number);
-
-      // Get quote from Uniswap
-      const quoteResult = await walletProvider.readContract({
-        address: getAddress(addresses.Quoter),
-        abi: UNISWAP_QUOTER_ABI,
-        functionName: "quoteExactInputSingle",
-        args: [
-          {
-            tokenIn: getAddress(args.tokenIn),
-            tokenOut: getAddress(args.tokenOut),
-            amountIn,
-            fee: args.fee,
-            sqrtPriceLimitX96: 0,
-          },
-        ],
-      });
-
-      const amountOut = (quoteResult as any)[0] as bigint;
-      const formattedAmountOut = formatUnits(amountOut, tokenOutDecimals as number);
-
-      return `Quote: ${args.amount} ${tokenInSymbol} → ${formattedAmountOut} ${tokenOutSymbol} (Fee: ${args.fee / 10000}%)`;
-    } catch (error) {
-      return `Error getting quote: ${error}`;
-    }
-  }
-
-  /**
-   * Swap tokens on Uniswap V3.
-   *
-   * @param walletProvider - The wallet provider to execute the swap.
-   * @param args - The input arguments for the swap.
-   * @returns A message containing the swap transaction details.
-   */
-  @CreateAction({
-    name: "swap",
-    description: `
-    Swap tokens on Uniswap V3. This will execute a token swap on Base network.
-    
-    Important notes:
-    - Ensure you have sufficient balance of the input token
-    - The swap will automatically handle token approvals if needed
-    - Uses exact input swap (you specify exact amount in, get variable amount out)
-    - Supports slippage protection
-    
-    For ETH swaps, use the WETH token address: 0x4200000000000000000000000000000000000006
-    `,
-    schema: SwapSchema,
-  })
-  async swap(
-    walletProvider: EvmWalletProvider,
-    args: z.infer<typeof SwapSchema>,
-  ): Promise<string> {
-    try {
-      const network = walletProvider.getNetwork();
-      const addresses = UNISWAP_ADDRESSES[network.networkId!];
-      
-      if (!addresses) {
-        return `Error: Uniswap not supported on network ${network.networkId}`;
-      }
-
-      const walletAddress = await walletProvider.getAddress();
-
-      // Get token metadata
-      const [tokenInDecimals, tokenOutDecimals, tokenInSymbol, tokenOutSymbol] = await Promise.all([
-        walletProvider.readContract({
-          address: getAddress(args.tokenIn),
-          abi: ERC20_ABI,
-          functionName: "decimals",
-          args: [],
-        }),
-        walletProvider.readContract({
-          address: getAddress(args.tokenOut),
-          abi: ERC20_ABI,
-          functionName: "decimals",
-          args: [],
-        }),
-        walletProvider.readContract({
-          address: getAddress(args.tokenIn),
-          abi: ERC20_ABI,
-          functionName: "symbol",
-          args: [],
-        }),
-        walletProvider.readContract({
-          address: getAddress(args.tokenOut),
-          abi: ERC20_ABI,
-          functionName: "symbol",
-          args: [],
-        }),
       ]);
 
       const amountIn = parseUnits(args.amount, tokenInDecimals as number);
 
-      // Check if approval is needed (always required for ERC20, including WETH)
-      const allowance = await walletProvider.readContract({
+      // Ensure router has allowance to spend tokenIn
+      const allowance = (await walletProvider.readContract({
         address: getAddress(args.tokenIn),
         abi: ERC20_ABI,
         functionName: "allowance",
         args: [walletAddress, getAddress(addresses.SwapRouter02)],
-      }) as bigint;
+      })) as bigint;
 
       if (allowance < amountIn) {
-        // Approve router to spend tokens
         const approveHash = await walletProvider.sendTransaction({
           to: getAddress(args.tokenIn),
           data: encodeFunctionData({
@@ -198,27 +102,51 @@ export class UniswapActionProvider extends ActionProvider<EvmWalletProvider> {
         await walletProvider.waitForTransactionReceipt(approveHash);
       }
 
-      // Get quote for minimum amount out calculation
-      const quoteResult = await walletProvider.readContract({
-        address: getAddress(addresses.Quoter),
-        abi: UNISWAP_QUOTER_ABI,
-        functionName: "quoteExactInputSingle",
-        args: [
-          {
-            tokenIn: getAddress(args.tokenIn),
-            tokenOut: getAddress(args.tokenOut),
-            amountIn,
-            fee: args.fee,
-            sqrtPriceLimitX96: 0,
-          },
-        ],
-      });
+      const feeTiers = [args.fee, 500, 3000, 10000].filter((v, i, a) => a.indexOf(v) === i);
+      let quotedAmountOut: bigint | null = null;
+      let usedFee: number | null = null;
+      for (const fee of feeTiers) {
+        try {
+          const qr = await walletProvider.readContract({
+            address: getAddress(addresses.Quoter),
+{{ ... }}
+    args: z.infer<typeof SwapSchema>,
+  ): Promise<string> {
+    try {
+      const network = walletProvider.getNetwork();
+      const addresses = UNISWAP_ADDRESSES[network.networkId!];
+      if (!addresses) {
+        return `Error: Uniswap not supported on network ${network.networkId}`;
+      }
 
-      const expectedAmountOut = (quoteResult as any)[0] as bigint;
+      const walletAddress = await walletProvider.getAddress();
+
+      const [tokenInDecimals, tokenOutDecimals, tokenInSymbol, tokenOutSymbol] = await Promise.all([
+        walletProvider.readContract({
+          address: getAddress(args.tokenIn),
+          abi: ERC20_ABI,
+{{ ... }}
+              },
+            ],
+          });
+          const out = (qr as any)[0] as bigint;
+          if (out && out > 0n) {
+            quotedAmountOut = out;
+            usedFee = fee;
+            break;
+          }
+        } catch {
+          // try next fee tier
+        }
+      }
+
+      if (!quotedAmountOut || !usedFee) {
+        return "Error: No available Uniswap V3 pool found for the provided token pair on this network. Verify token addresses and try a different fee tier (500/3000/10000).";
+      }
+
       const slippageBps = Math.floor(args.slippageTolerance * 100); // Convert % to basis points
-      const amountOutMinimum = (expectedAmountOut * BigInt(10000 - slippageBps)) / BigInt(10000);
+      const minAmountOut = (quotedAmountOut * BigInt(10000 - slippageBps)) / BigInt(10000);
 
-      // Execute the swap
       const swapHash = await walletProvider.sendTransaction({
         to: getAddress(addresses.SwapRouter02),
         data: encodeFunctionData({
@@ -228,10 +156,10 @@ export class UniswapActionProvider extends ActionProvider<EvmWalletProvider> {
             {
               tokenIn: getAddress(args.tokenIn),
               tokenOut: getAddress(args.tokenOut),
-              fee: args.fee,
+              fee: usedFee,
               recipient: walletAddress,
               amountIn,
-              amountOutMinimum,
+              amountOutMinimum: minAmountOut,
               sqrtPriceLimitX96: 0,
             },
           ],
@@ -241,19 +169,16 @@ export class UniswapActionProvider extends ActionProvider<EvmWalletProvider> {
 
       await walletProvider.waitForTransactionReceipt(swapHash);
 
-      const expectedAmountOutFormatted = formatUnits(expectedAmountOut, tokenOutDecimals as number);
-      const minAmountOutFormatted = formatUnits(amountOutMinimum, tokenOutDecimals as number);
+      const quotedAmountOutFormatted = formatUnits(quotedAmountOut, tokenOutDecimals as number);
+      const minAmountOutFormatted = formatUnits(minAmountOut, tokenOutDecimals as number);
 
-      return `Successfully swapped ${args.amount} ${tokenInSymbol} for ~${expectedAmountOutFormatted} ${tokenOutSymbol}\n` +
-             `Minimum received: ${minAmountOutFormatted} ${tokenOutSymbol} (${args.slippageTolerance}% slippage)\n` +
-             `Transaction hash: ${swapHash}`;
-
+      return `Successfully swapped ${args.amount} ${tokenInSymbol} for ~${quotedAmountOutFormatted} ${tokenOutSymbol}\n` +
+        `Minimum received: ${minAmountOutFormatted} ${tokenOutSymbol} (${args.slippageTolerance}% slippage)\n` +
+        `Transaction hash: ${swapHash}`;
     } catch (error) {
       return `Error executing swap: ${error}`;
     }
   }
-
-  /**
    * Checks if the Uniswap action provider supports the given network.
    *
    * @param network - The network to check.
