@@ -3,7 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { fetchErc20Transfers, SupportedNetwork } from "@/lib/indexers/blockscout";
 import { prepareAgentkitAndWalletProvider } from "@/app/api/agent/prepare-agentkit";
 import { getAddress, formatUnits } from "viem";
-import { uniswapV3ActionProvider } from "@/lib/customActions/uniswap";
+import type { EvmWalletProvider } from "@coinbase/agentkit";
+import { uniswapActionProvider } from "@/lib/customActions/uniswap";
 
 // Simple protection: require a header to run the worker
 const WORKER_AUTH_HEADER = process.env.WORKER_AUTH_HEADER ?? "x-worker-secret";
@@ -53,15 +54,22 @@ export async function POST(req: NextRequest) {
     const { walletProvider } = await prepareAgentkitAndWalletProvider(userWalletAddress);
     const networkId = assertNetworkId(walletProvider.getNetwork().networkId);
     const agentAddress = walletProvider.getAddress().toLowerCase() as `0x${string}`;
+    const evmWallet = walletProvider as unknown as EvmWalletProvider;
 
-    const uni = uniswapV3ActionProvider();
+    const uni = uniswapActionProvider();
 
     // Preload positions for rules (so we know what we can sell)
     const ruleIds = rules.map((r: any) => r.id);
     const positions = await prisma.mirroredPosition.findMany({
       where: { ruleId: { in: ruleIds } },
     }).catch(() => []);
-    const tokenSet = new Set<string>((positions || []).map((p: any) => p.tokenAddress.toLowerCase()));
+    const positionsByRule = new Map<string, Set<string>>();
+    for (const p of positions || []) {
+      const key = (p as any).ruleId as string;
+      const set = positionsByRule.get(key) ?? new Set<string>();
+      set.add(((p as any).tokenAddress as string).toLowerCase());
+      positionsByRule.set(key, set);
+    }
 
     const nowSec = Math.floor(Date.now() / 1000);
     const results: Array<{ ruleId: string; executed: boolean; reason?: string; txHash?: string }> = [];
@@ -123,10 +131,11 @@ export async function POST(req: NextRequest) {
       }
 
       // Determine tokens we can sell based on our positions intersecting tokens sold by followed wallets
+      const tokensForRule = positionsByRule.get(rule.id) ?? new Set<string>();
       const candidateTokens = new Set<string>();
       for (const w of walletsWithSells) {
         for (const ev of sellEventsByWallet[w] || []) {
-          if (tokenSet.has(ev.tokenAddress.toLowerCase())) {
+          if (tokensForRule.has(ev.tokenAddress.toLowerCase())) {
             candidateTokens.add(ev.tokenAddress.toLowerCase());
           }
         }
@@ -141,9 +150,8 @@ export async function POST(req: NextRequest) {
       let anyTx = false;
       for (const tAddr of candidateTokens) {
         try {
-          // Read balance & decimals
           const [decimals, bal] = await Promise.all([
-            walletProvider.readContract({
+            evmWallet.readContract({
               address: getAddress(tAddr) as `0x${string}`,
               abi: [
                 { inputs: [], name: "decimals", outputs: [{ type: "uint8" }], stateMutability: "view", type: "function" },
@@ -151,7 +159,7 @@ export async function POST(req: NextRequest) {
               functionName: "decimals",
               args: [],
             }) as Promise<number>,
-            walletProvider.readContract({
+            evmWallet.readContract({
               address: getAddress(tAddr) as `0x${string}`,
               abi: [
                 { inputs: [{ name: "account", type: "address" }], name: "balanceOf", outputs: [{ type: "uint256" }], stateMutability: "view", type: "function" },
@@ -164,7 +172,7 @@ export async function POST(req: NextRequest) {
           if (bal <= 0n) continue;
           const amountHuman = formatUnits(bal, Number(decimals));
 
-          const res = await uni.swap(walletProvider as any, {
+          const res = await uni.swap(evmWallet as any, {
             tokenIn: getAddress(tAddr),
             tokenOut: "USDC",
             amount: amountHuman,
