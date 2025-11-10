@@ -47,18 +47,18 @@ export default function ClientLayout({
         {/* Overlay for mobile sidebar */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 bg-black bg-opacity-70 z-20 lg:hidden"
+            className="fixed inset-0 bg-black/60 z-20 lg:hidden"
             onClick={closeSidebar}
           />
         )}
 
         {/* Main Content Area - ensuring there's proper spacing from sidebar */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 flex flex-col overflow-hidden bg-[var(--color-bg-primary)]">
           {/* Header */}
           <Header toggleSidebar={toggleSidebar} />
 
           {/* Main Content with proper padding for fixed elements */}
-          <main className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 bg-background pb-20 lg:pb-6">
+          <main className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 bg-[var(--color-bg-primary)] pb-20 lg:pb-6">
             {/* Content container with max width and proper spacing */}
             <div className="max-w-7xl mx-auto w-full">{children}</div>
           </main>

@@ -155,8 +155,8 @@ export default function DiscoverPage() {
 				<div className="flex flex-col space-y-4">
 				<div className="flex items-center justify-between">
 					<div>
-						<h1 className="text-3xl font-bold text-gray-900">Discover</h1>
-						<p className="text-gray-600 mt-2">
+						<h1 className="text-3xl font-bold text-[var(--color-text-primary)]">Discover</h1>
+						<p className="text-[var(--color-text-secondary)] mt-2 text-sm">
 							Jumpstart your trading with user-curated groups and top traders. Gangstr automates the trades — but outcomes depend on your strategy and market conditions.
 						</p>
 					</div>
@@ -165,16 +165,16 @@ export default function DiscoverPage() {
 				{/* Tabs */}
 				<Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'groups' | 'traders')}>
 					<div className="flex items-center justify-between">
-						<TabsList className="bg-gray-100 p-1">
+						<TabsList className="bg-[var(--color-surface)] border border-[var(--color-border)] p-1">
 							<TabsTrigger
 								value="groups"
-								className="data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm"
+								className="data-[state=active]:bg-[var(--color-accent-primary)] data-[state=active]:text-[var(--color-bg-primary)]"
 							>
 								Top Groups
 							</TabsTrigger>
 							<TabsTrigger
 								value="traders"
-								className="data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm"
+								className="data-[state=active]:bg-[var(--color-accent-primary)] data-[state=active]:text-[var(--color-bg-primary)]"
 							>
 								Top Traders
 							</TabsTrigger>
@@ -185,7 +185,7 @@ export default function DiscoverPage() {
 							<Button
 								variant="outline"
 								size="sm"
-								className="bg-white hover:bg-gray-50"
+								className="bg-[var(--color-surface)] hover:bg-[var(--color-bg-highlight)] border-[var(--color-border)]"
 							>
 								<Sparkles className="h-4 w-4 mr-2" />
 								AI Suggest
@@ -193,7 +193,7 @@ export default function DiscoverPage() {
 							<Button
 								variant="outline"
 								size="sm"
-								className="bg-white hover:bg-gray-50"
+								className="bg-[var(--color-surface)] hover:bg-[var(--color-bg-highlight)] border-[var(--color-border)]"
 							>
 								Users Win Rate
 								<ArrowRight className="h-4 w-4 ml-2" />
@@ -207,19 +207,19 @@ export default function DiscoverPage() {
 									const nextIndex = (currentIndex + 1) % timeframes.length
 									setTimeframe(timeframes[nextIndex])
 								}}
-								className="bg-white hover:bg-gray-50"
+								className="bg-[var(--color-surface)] hover:bg-[var(--color-bg-highlight)] border-[var(--color-border)]"
 							>
 								<Clock className="h-4 w-4 mr-2" />
 								{timeframe}
 							</Button>
-							<div className="flex items-center space-x-2 bg-white border border-gray-200 rounded-md px-3 py-1.5">
-								<Settings className="h-4 w-4 text-gray-400" />
-								<span className="text-sm text-gray-600">Copy $</span>
+							<div className="flex items-center space-x-2 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg px-3 py-1.5">
+								<Settings className="h-4 w-4 text-[var(--color-text-tertiary)]" />
+								<span className="text-sm text-[var(--color-text-secondary)] uppercase tracking-wider">Copy $</span>
 								<input
 									type="number"
 									value={copyAmount}
 									onChange={(e) => setCopyAmount(parseInt(e.target.value) || 25)}
-									className="w-12 text-sm border-none outline-none text-gray-900"
+									className="w-12 text-sm border-none outline-none bg-transparent text-[var(--color-text-primary)] font-mono font-variant-numeric-tabular"
 									min="1"
 								/>
 							</div>
@@ -228,10 +228,10 @@ export default function DiscoverPage() {
 
 					{/* Top Groups Tab */}
 					<TabsContent value="groups" className="mt-6">
-						<div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+						<div className="bg-[var(--color-surface)] rounded-lg border border-[var(--color-border)] shadow-[0_1px_3px_rgba(0,0,0,0.3),0_0_8px_rgba(0,255,149,0.02)] overflow-hidden">
 							<Table>
 								<TableHeader>
-									<TableRow className="bg-gray-50">
+									<TableRow className="bg-[var(--color-bg-highlight)] border-b border-[var(--color-border)]">
 										<TableHead className="w-12">Rank</TableHead>
 										<TableHead>Group</TableHead>
 										<TableHead>Trades</TableHead>
@@ -246,13 +246,16 @@ export default function DiscoverPage() {
 								<TableBody>
 									{isLoading ? (
 										<TableRow>
-											<TableCell colSpan={9} className="text-center py-8 text-gray-500">
-												Loading trading groups...
+											<TableCell colSpan={9} className="text-center py-12">
+												<div className="flex flex-col items-center justify-center">
+													<div className="terminal-spinner w-8 h-8 mb-4"></div>
+													<p className="text-[var(--color-text-secondary)] text-sm uppercase tracking-wider">Loading trading groups...</p>
+												</div>
 											</TableCell>
 										</TableRow>
 									) : groups.length === 0 ? (
 										<TableRow>
-											<TableCell colSpan={9} className="text-center py-8 text-gray-500">
+											<TableCell colSpan={9} className="text-center py-12 text-[var(--color-text-secondary)]">
 												No trading groups found
 											</TableCell>
 										</TableRow>
@@ -274,10 +277,10 @@ export default function DiscoverPage() {
 
 					{/* Top Traders Tab */}
 					<TabsContent value="traders" className="mt-6">
-						<div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+						<div className="bg-[var(--color-surface)] rounded-lg border border-[var(--color-border)] shadow-[0_1px_3px_rgba(0,0,0,0.3),0_0_8px_rgba(0,255,149,0.02)] overflow-hidden">
 							<Table>
 								<TableHeader>
-									<TableRow className="bg-gray-50">
+									<TableRow className="bg-[var(--color-bg-highlight)] border-b border-[var(--color-border)]">
 										<TableHead className="w-12">Rank</TableHead>
 										<TableHead>Trader</TableHead>
 										<TableHead>Trades</TableHead>
@@ -293,13 +296,16 @@ export default function DiscoverPage() {
 								<TableBody>
 									{isLoading ? (
 										<TableRow>
-											<TableCell colSpan={10} className="text-center py-8 text-gray-500">
-												Loading traders...
+											<TableCell colSpan={10} className="text-center py-12">
+												<div className="flex flex-col items-center justify-center">
+													<div className="terminal-spinner w-8 h-8 mb-4"></div>
+													<p className="text-[var(--color-text-secondary)] text-sm uppercase tracking-wider">Loading traders...</p>
+												</div>
 											</TableCell>
 										</TableRow>
 									) : traders.length === 0 ? (
 										<TableRow>
-											<TableCell colSpan={10} className="text-center py-8 text-gray-500">
+											<TableCell colSpan={10} className="text-center py-12 text-[var(--color-text-secondary)]">
 												No traders found
 											</TableCell>
 										</TableRow>

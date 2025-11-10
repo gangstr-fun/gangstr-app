@@ -5,6 +5,7 @@ import { Trader } from '@/lib/types/copy-trading'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { TableRow, TableCell } from '@/components/ui/table'
 import { MoreVertical, Copy, CheckCircle2, Users } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -34,95 +35,96 @@ export const TraderRow: React.FC<TraderRowProps> = ({
 	}
 
 	return (
-		<tr className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors">
+		<TableRow className="border-b border-[var(--color-border)] hover:bg-[var(--color-bg-highlight)] transition-colors">
 			{/* Rank */}
-			<td className="px-4 py-4 text-sm font-medium text-gray-600">
+			<TableCell className="px-4 py-4 text-sm font-semibold text-[var(--color-text-secondary)] font-mono font-variant-numeric-tabular">
 				{rank}
-			</td>
+			</TableCell>
 
 			{/* Trader */}
-			<td className="px-4 py-4">
+			<TableCell className="px-4 py-4">
 				<div className="flex items-center space-x-3">
-					<Avatar className="h-10 w-10 border-2 border-gray-200">
+					<Avatar className="h-10 w-10 border-2 border-[var(--color-border)]">
 						<AvatarImage src={trader.avatar} alt={trader.name} />
-						<AvatarFallback className="bg-primary text-white text-xs font-semibold">
+						<AvatarFallback className="bg-[var(--color-accent-primary)] text-[var(--color-bg-primary)] text-xs font-semibold font-mono">
 							{getInitials(trader.name)}
 						</AvatarFallback>
 					</Avatar>
 					<div className="flex-1 min-w-0">
 						<div className="flex items-center space-x-2">
-							<h3 className="text-sm font-semibold text-gray-900 truncate">
+							<h3 className="text-sm font-semibold text-[var(--color-text-primary)] truncate">
 								{trader.name}
 							</h3>
 							{trader.isVerified && (
-								<CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
+								<CheckCircle2 className="h-4 w-4 text-[var(--color-accent-primary)] flex-shrink-0" />
 							)}
 						</div>
-						<p className="text-xs text-gray-500 truncate font-mono">
+						<p className="text-xs text-[var(--color-text-tertiary)] truncate font-mono">
 							{trader.address}
 						</p>
 					</div>
 				</div>
-			</td>
+			</TableCell>
 
 			{/* Trades */}
-			<td className="px-4 py-4 text-sm text-gray-700">
+			<TableCell className="px-4 py-4 text-sm text-[var(--color-text-primary)] font-mono font-variant-numeric-tabular">
 				{trader.trades.toLocaleString()}
-			</td>
+			</TableCell>
 
 			{/* ROI */}
-			<td
+			<TableCell
 				className={cn(
-					'px-4 py-4 text-sm font-medium',
-					isPositiveROI ? 'text-green-600' : 'text-red-600'
+					'px-4 py-4 text-sm font-semibold font-mono font-variant-numeric-tabular',
+					isPositiveROI ? 'text-[var(--color-alert-green)]' : 'text-[var(--color-alert-red)]'
 				)}
 			>
 				{isPositiveROI ? '+' : ''}
 				{trader.roi.toFixed(1)}%
-			</td>
+			</TableCell>
 
 			{/* PnL */}
-			<td
+			<TableCell
 				className={cn(
-					'px-4 py-4 text-sm font-medium',
-					isPositivePnL ? 'text-green-600' : 'text-red-600'
+					'px-4 py-4 text-sm font-semibold font-mono font-variant-numeric-tabular',
+					isPositivePnL ? 'text-[var(--color-alert-green)]' : 'text-[var(--color-alert-red)]'
 				)}
 			>
 				{trader.pnl}
-			</td>
+			</TableCell>
 
 			{/* Win Rate */}
-			<td className="px-4 py-4 text-sm text-gray-700">
+			<TableCell className="px-4 py-4 text-sm text-[var(--color-text-primary)] font-mono font-variant-numeric-tabular">
 				{trader.winRate.toFixed(2)}%
-			</td>
+			</TableCell>
 
 			{/* Scam Rate */}
-			<td className="px-4 py-4 text-sm text-gray-700">
+			<TableCell className="px-4 py-4 text-sm text-[var(--color-text-primary)] font-mono font-variant-numeric-tabular">
 				{trader.scamRate.toFixed(1)}%
-			</td>
+			</TableCell>
 
 			{/* Users Win Rate */}
-			<td className="px-4 py-4">
+			<TableCell className="px-4 py-4">
 				<div className="flex items-center space-x-2">
-					<Users className="h-4 w-4 text-gray-400" />
-					<span className="text-sm text-gray-700">{trader.usersWinRate}%</span>
+					<Users className="h-4 w-4 text-[var(--color-text-tertiary)]" />
+					<span className="text-sm text-[var(--color-text-primary)] font-mono font-variant-numeric-tabular">{trader.usersWinRate}%</span>
 				</div>
-			</td>
+			</TableCell>
 
 			{/* Followers */}
-			<td className="px-4 py-4 text-sm text-gray-700">
+			<TableCell className="px-4 py-4 text-sm text-[var(--color-text-primary)] font-mono font-variant-numeric-tabular">
 				{trader.totalFollowers.toLocaleString()}
-			</td>
+			</TableCell>
 
 			{/* Copy Action */}
-			<td className="px-4 py-4">
+			<TableCell className="px-4 py-4">
 				<div className="flex items-center space-x-2">
 					<Button
 						size="sm"
 						variant="default"
 						onClick={() => onCopy(trader.id)}
+						className="uppercase tracking-wider"
 					>
-						<Copy className="mr-1" />
+						<Copy className="mr-1 h-3 w-3" />
 						Copy ${copyAmount}
 					</Button>
 					<Button
@@ -133,8 +135,8 @@ export const TraderRow: React.FC<TraderRowProps> = ({
 						<MoreVertical className="h-4 w-4" />
 					</Button>
 				</div>
-			</td>
-		</tr>
+			</TableCell>
+		</TableRow>
 	)
 }
 

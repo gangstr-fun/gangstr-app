@@ -190,8 +190,8 @@ export default function PortfolioDashboardPage() {
   if (isLoading && !selectedPortfolio) {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-100px)] flex-col gap-4">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>
-        <p className="text-black text-sm">Loading portfolio data...</p>
+        <div className="terminal-spinner w-12 h-12"></div>
+        <p className="text-[var(--color-text-secondary)] text-sm uppercase tracking-wider">Loading portfolio data...</p>
       </div>
     );
   }
@@ -206,10 +206,10 @@ export default function PortfolioDashboardPage() {
         {/* Portfolio Header */}
         <div className="flex flex-col sm:flex-row justify-between gap-4 sm:items-center mb-2">
           <div className="flex flex-col">
-            <h1 className="text-xl sm:text-2xl font-normal text-black">
+            <h1 className="text-xl sm:text-2xl font-semibold text-[var(--color-text-primary)] uppercase tracking-wider">
               Portfolio Dashboard
             </h1>
-            <p className="text-sm text-black">
+            <p className="text-sm text-[var(--color-text-secondary)]">
               {selectedPortfolio?.description ||
                 "Your investment portfolio overview"}
             </p>
@@ -245,19 +245,19 @@ export default function PortfolioDashboardPage() {
           >
             {/* decorative circle removed */}
             <ResponsiveCardHeader>
-              <p className="text-xs text-black">Total Value</p>
+              <p className="text-xs text-[var(--color-text-secondary)] uppercase tracking-wider font-semibold">Total Value</p>
             </ResponsiveCardHeader>
             <ResponsiveCardContent>
               <div className="flex flex-col">
-                <h3 className="text-lg sm:text-xl font-normal">
+                <h3 className="text-lg sm:text-xl font-bold text-[var(--color-accent-primary)] font-mono font-variant-numeric-tabular">
                   $
                   {stats.totalValue.toLocaleString("en-US", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
                 </h3>
-                <div className="flex items-center text-xs text-black mt-1">
-                  <TrendingUp className="h-3 w-3 mr-1 text-black" />
+                <div className="flex items-center text-xs text-[var(--color-alert-green)] mt-1 font-mono font-variant-numeric-tabular">
+                  <TrendingUp className="h-3 w-3 mr-1" />
                   +$489.53 (1.68%)
                 </div>
               </div>
@@ -273,19 +273,19 @@ export default function PortfolioDashboardPage() {
           >
             {/* decorative circle removed */}
             <ResponsiveCardHeader>
-              <p className="text-xs text-black">24h Change</p>
+              <p className="text-xs text-[var(--color-text-secondary)] uppercase tracking-wider font-semibold">24h Change</p>
             </ResponsiveCardHeader>
             <ResponsiveCardContent>
               <div className="flex flex-col">
-                <h3 className="text-lg sm:text-xl font-normal">
+                <h3 className="text-lg sm:text-xl font-bold text-[var(--color-accent-primary)] font-mono font-variant-numeric-tabular">
                   $
                   {stats.dayChange.toLocaleString("en-US", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
                 </h3>
-                <div className="flex items-center text-xs text-black mt-1">
-                  <TrendingUp className="h-3 w-3 mr-1 text-black" />
+                <div className="flex items-center text-xs text-[var(--color-alert-green)] mt-1 font-mono font-variant-numeric-tabular">
+                  <TrendingUp className="h-3 w-3 mr-1" />
                   {stats.dayChangePercent.toFixed(2)}%
                 </div>
               </div>
@@ -301,15 +301,15 @@ export default function PortfolioDashboardPage() {
           >
             {/* decorative circle removed */}
             <ResponsiveCardHeader>
-              <p className="text-xs text-black">Cumulative Return</p>
+              <p className="text-xs text-[var(--color-text-secondary)] uppercase tracking-wider font-semibold">Cumulative Return</p>
             </ResponsiveCardHeader>
             <ResponsiveCardContent>
               <div className="flex flex-col">
-                <h3 className="text-lg sm:text-xl font-normal">
+                <h3 className="text-lg sm:text-xl font-bold text-[var(--color-accent-primary)] font-mono font-variant-numeric-tabular">
                   {stats.cumulativeReturn.toFixed(2)}%
                 </h3>
-                <div className="flex items-center text-xs text-black mt-1">
-                  <TrendingUp className="h-3 w-3 mr-1 text-black" />
+                <div className="flex items-center text-xs text-[var(--color-alert-green)] mt-1 font-mono font-variant-numeric-tabular">
+                  <TrendingUp className="h-3 w-3 mr-1" />
                   +1.2% this month
                 </div>
               </div>
@@ -325,15 +325,15 @@ export default function PortfolioDashboardPage() {
           >
             {/* decorative circle removed */}
             <ResponsiveCardHeader>
-              <p className="text-xs text-black">Active Strategies</p>
+              <p className="text-xs text-[var(--color-text-secondary)] uppercase tracking-wider font-semibold">Active Strategies</p>
             </ResponsiveCardHeader>
             <ResponsiveCardContent>
               <div className="flex flex-col">
-                <h3 className="text-lg sm:text-xl font-normal">
+                <h3 className="text-lg sm:text-xl font-bold text-[var(--color-accent-primary)] font-mono font-variant-numeric-tabular">
                   {selectedPortfolio?.strategies?.filter((s) => s.isActive)
                     .length || 0}
                 </h3>
-                <div className="flex items-center text-xs text-black mt-1">
+                <div className="flex items-center text-xs text-[var(--color-text-tertiary)] mt-1">
                   <Clock className="h-3 w-3 mr-1" />
                   Last modified: 2d ago
                 </div>
@@ -347,7 +347,7 @@ export default function PortfolioDashboardPage() {
         <ResponsiveCard variant="glass" size="lg" withHover>
           <ResponsiveCardHeader withBorder>
             <div className="flex flex-col sm:flex-row justify-between sm:items-center w-full gap-3">
-              <ResponsiveCardTitle className="text-black">
+              <ResponsiveCardTitle className="text-[var(--color-text-primary)] uppercase tracking-wider">
                 Portfolio Performance
               </ResponsiveCardTitle>
               <div className="flex items-center space-x-1 bg-secondary rounded-full p-0.5">
@@ -369,73 +369,73 @@ export default function PortfolioDashboardPage() {
             </div>
           </ResponsiveCardHeader>
           <ResponsiveCardContent>
-            <div className="h-60 w-full">
-              {/* Chart SVG - Placeholder for actual chart component */}
-              <div className="h-full w-full relative rounded-lg overflow-hidden bg-black/5 border border-border">
-                <svg
-                  width="100%"
-                  height="100%"
-                  viewBox="0 0 600 240"
-                  preserveAspectRatio="none"
-                  className="text-black"
-                >
-                  <path
-                    d="M0,200 C100,180 150,100 200,120 C250,140 300,80 350,60 C400,40 450,60 500,40 C550,20 600,10 600,10"
-                    fill="none"
-                    stroke="url(#lineGradient)"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M0,200 C100,180 150,100 200,120 C250,140 300,80 350,60 C400,40 450,60 500,40 C550,20 600,10 600,10 L600,240 L0,240 Z"
-                    fill="url(#areaGradient)"
-                    strokeWidth="0"
-                  />
-                  <defs>
-                    <linearGradient
-                      id="lineGradient"
-                      x1="0%"
-                      y1="0%"
-                      x2="100%"
-                      y2="0%"
-                    >
-                      <stop offset="0%" stopColor="currentColor" />
-                      <stop offset="100%" stopColor="currentColor" />
-                    </linearGradient>
-                    <linearGradient
-                      id="areaGradient"
-                      x1="0%"
-                      y1="0%"
-                      x2="0%"
-                      y2="100%"
-                    >
-                      <stop
-                        offset="0%"
-                        stopColor="currentColor"
-                        stopOpacity="0.25"
-                      />
-                      <stop
-                        offset="100%"
-                        stopColor="currentColor"
-                        stopOpacity="0.05"
-                      />
-                    </linearGradient>
-                  </defs>
-                </svg>
+              <div className="h-60 w-full">
+                {/* Chart SVG - Placeholder for actual chart component */}
+                <div className="h-full w-full relative rounded-lg overflow-hidden bg-[var(--color-surface)] border border-[var(--color-border)] terminal-grid">
+                  <svg
+                    width="100%"
+                    height="100%"
+                    viewBox="0 0 600 240"
+                    preserveAspectRatio="none"
+                    className="text-[var(--color-accent-primary)]"
+                  >
+                    <path
+                      d="M0,200 C100,180 150,100 200,120 C250,140 300,80 350,60 C400,40 450,60 500,40 C550,20 600,10 600,10"
+                      fill="none"
+                      stroke="url(#lineGradient)"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M0,200 C100,180 150,100 200,120 C250,140 300,80 350,60 C400,40 450,60 500,40 C550,20 600,10 600,10 L600,240 L0,240 Z"
+                      fill="url(#areaGradient)"
+                      strokeWidth="0"
+                    />
+                    <defs>
+                      <linearGradient
+                        id="lineGradient"
+                        x1="0%"
+                        y1="0%"
+                        x2="100%"
+                        y2="0%"
+                      >
+                        <stop offset="0%" stopColor="var(--color-accent-primary)" />
+                        <stop offset="100%" stopColor="var(--color-accent-secondary)" />
+                      </linearGradient>
+                      <linearGradient
+                        id="areaGradient"
+                        x1="0%"
+                        y1="0%"
+                        x2="0%"
+                        y2="100%"
+                      >
+                        <stop
+                          offset="0%"
+                          stopColor="var(--color-accent-primary)"
+                          stopOpacity="0.25"
+                        />
+                        <stop
+                          offset="100%"
+                          stopColor="var(--color-accent-primary)"
+                          stopOpacity="0.05"
+                        />
+                      </linearGradient>
+                    </defs>
+                  </svg>
 
-                <div className="absolute bottom-0 left-0 right-0 flex justify-between px-4 py-2 text-xs text-black">
-                  {Array(8)
-                    .fill(0)
-                    .map((_, i) => (
-                      <div key={i}>
-                        {chartData.labels?.[
-                          i * Math.ceil(chartData.labels?.length / 8)
-                        ] || `Jul ${22 + i}`}
-                      </div>
-                    ))}
+                  <div className="absolute bottom-0 left-0 right-0 flex justify-between px-4 py-2 text-xs text-[var(--color-text-secondary)] font-mono">
+                    {Array(8)
+                      .fill(0)
+                      .map((_, i) => (
+                        <div key={i}>
+                          {chartData.labels?.[
+                            i * Math.ceil(chartData.labels?.length / 8)
+                          ] || `Jul ${22 + i}`}
+                        </div>
+                      ))}
+                  </div>
                 </div>
               </div>
-            </div>
           </ResponsiveCardContent>
         </ResponsiveCard>
 
@@ -446,7 +446,7 @@ export default function PortfolioDashboardPage() {
             <ResponsiveCard variant="glass" size="md" className="h-full">
               <ResponsiveCardHeader withBorder>
                 <div className="flex items-center justify-between w-full">
-                  <ResponsiveCardTitle className="text-black">
+                  <ResponsiveCardTitle className="text-[var(--color-text-primary)] uppercase tracking-wider">
                     Assets
                   </ResponsiveCardTitle>
                   <button className="inline-flex items-center px-2.5 py-1.5 text-xs rounded-md bg-[rgb(210,113,254)] text-black shadow-sm hover:brightness-110 transition-all">
@@ -459,29 +459,29 @@ export default function PortfolioDashboardPage() {
                 <div className="overflow-x-auto -mx-4 px-4">
                   <table className="min-w-full divide-y divide-border">
                     <thead>
-                      <tr>
-                        <th className="py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
+                      <tr className="bg-[var(--color-bg-highlight)] border-b border-[var(--color-border)]">
+                        <th className="py-3 text-left text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider">
                           Asset
                         </th>
                         {!isMobile && (
-                          <th className="py-3 text-right text-xs font-medium text-black uppercase tracking-wider">
+                          <th className="py-3 text-right text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider">
                             Price
                           </th>
                         )}
-                        <th className="py-3 text-right text-xs font-medium text-black uppercase tracking-wider">
+                        <th className="py-3 text-right text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider">
                           Holdings
                         </th>
-                        <th className="py-3 text-right text-xs font-medium text-black uppercase tracking-wider">
+                        <th className="py-3 text-right text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider">
                           Value
                         </th>
                         {!isMobile && (
-                          <th className="py-3 text-right text-xs font-medium text-black uppercase tracking-wider">
+                          <th className="py-3 text-right text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider">
                             Alloc.
                           </th>
                         )}
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-border/60">
+                    <tbody className="divide-y divide-[var(--color-border)]">
                       {selectedPortfolio?.assets
                         .slice(0, isMobile ? 5 : undefined)
                         .map((asset) => {
@@ -496,27 +496,27 @@ export default function PortfolioDashboardPage() {
                           return (
                             <tr
                               key={asset.id}
-                              className="hover:bg-muted transition-colors group"
+                              className="hover:bg-[var(--color-bg-highlight)] transition-colors group border-b border-[var(--color-border)]"
                             >
                               <td className="py-3 whitespace-nowrap">
                                 <div className="flex items-center">
                                   <div
-                                    className={`h-6 w-6 rounded-full flex items-center justify-center bg-primary/20 mr-2`}
+                                    className={`h-6 w-6 rounded-full flex items-center justify-center bg-[var(--color-accent-primary)]/20 mr-2 text-[var(--color-accent-primary)] font-mono font-semibold text-xs`}
                                   >
                                     {asset.symbol.charAt(0)}
                                   </div>
                                   <div>
-                                    <div className="text-sm font-medium">
+                                    <div className="text-sm font-semibold text-[var(--color-text-primary)]">
                                       {asset.symbol}
                                     </div>
-                                    <div className="text-xs text-black">
+                                    <div className="text-xs text-[var(--color-text-secondary)]">
                                       {asset.name}
                                     </div>
                                   </div>
                                 </div>
                               </td>
                               {!isMobile && (
-                                <td className="py-3 whitespace-nowrap text-right text-sm">
+                                <td className="py-3 whitespace-nowrap text-right text-sm text-[var(--color-text-primary)] font-mono font-variant-numeric-tabular">
                                   $
                                   {asset.currentPrice?.toLocaleString("en-US", {
                                     minimumFractionDigits: 2,
@@ -524,7 +524,7 @@ export default function PortfolioDashboardPage() {
                                   })}
                                 </td>
                               )}
-                              <td className="py-3 whitespace-nowrap text-right text-sm">
+                              <td className="py-3 whitespace-nowrap text-right text-sm text-[var(--color-text-primary)] font-mono font-variant-numeric-tabular">
                                 {asset.amount.toLocaleString("en-US", {
                                   minimumFractionDigits:
                                     asset.type === "stablecoin" ? 2 : 6,
@@ -532,7 +532,7 @@ export default function PortfolioDashboardPage() {
                                     asset.type === "stablecoin" ? 2 : 6,
                                 })}
                               </td>
-                              <td className="py-3 whitespace-nowrap text-right text-sm">
+                              <td className="py-3 whitespace-nowrap text-right text-sm text-[var(--color-text-primary)] font-mono font-variant-numeric-tabular">
                                 $
                                 {value.toLocaleString("en-US", {
                                   minimumFractionDigits: 2,
@@ -542,12 +542,12 @@ export default function PortfolioDashboardPage() {
                               {!isMobile && (
                                 <td className="py-3 whitespace-nowrap text-right text-sm">
                                   <div className="flex items-center justify-end">
-                                    <span className="mr-2">
+                                    <span className="mr-2 text-[var(--color-text-primary)] font-mono font-variant-numeric-tabular">
                                       {allocation.toFixed(1)}%
                                     </span>
-                                    <div className="w-12 bg-muted rounded-full h-1.5">
+                                    <div className="w-12 bg-[var(--color-bg-highlight)] rounded-full h-1.5">
                                       <div
-                                        className={`h-1.5 rounded-full bg-primary`}
+                                        className={`h-1.5 rounded-full bg-[var(--color-accent-primary)]`}
                                         style={{ width: `${allocation}%` }}
                                       ></div>
                                     </div>
@@ -563,7 +563,7 @@ export default function PortfolioDashboardPage() {
                         selectedPortfolio.assets.length > 5 && (
                           <tr>
                             <td colSpan={4} className="text-center py-2">
-                              <button className="text-xs text-black hover:text-black transition-colors flex items-center justify-center w-full">
+                              <button className="text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-accent-primary)] transition-colors flex items-center justify-center w-full uppercase tracking-wider">
                                 View all {selectedPortfolio?.assets?.length}{" "}
                                 assets
                                 <ChevronRight className="h-3 w-3 ml-1" />
