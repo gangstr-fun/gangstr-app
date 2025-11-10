@@ -43,8 +43,8 @@ export const StatsCard = ({
   return (
     <div
       className={cn(
-        "modern-card flex flex-col p-4 bg-white border border-gray-200 rounded-xl shadow-sm",
-        interactive && "hover:shadow-md transition-all duration-200",
+        "modern-card flex flex-col p-4 bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-xl shadow-[var(--shadow-soft)]",
+        interactive && "hover:shadow-[var(--shadow-strong)] hover:border-[var(--color-accent-primary)] transition-all duration-200",
         className
       )}
     >

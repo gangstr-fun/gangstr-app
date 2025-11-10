@@ -29,7 +29,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
           onClick={onClose}
         />
       )}
@@ -37,34 +37,44 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Sidebar */}
       <aside
         className={`
-          fixed top-0 left-0 z-50 h-full w-72 bg-white border-r border-gray-200 shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-auto lg:shadow-sm
+          fixed top-0 left-0 z-50 h-full w-72 bg-[var(--color-bg-primary)] border-r border-[var(--color-border)] shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-auto lg:shadow-sm terminal-grid
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="flex flex-col px-4 py-3 border-b border-gray-200">
+          <div className="flex flex-col px-6 py-5 border-b border-[var(--color-border)]">
             <div className="flex items-center justify-between">
               <a
                 href="https://gangstr.xyz"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center space-x-3 hover:opacity-80 transition-opacity cursor-pointer"
+                className="flex items-center space-x-3 hover:opacity-90 transition-all cursor-pointer group"
               >
-                <div className="w-10 h-10 flex items-center justify-center shadow-sm">
+                <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-[var(--color-bg-highlight)] border border-[var(--color-border)] group-hover:border-[var(--color-accent-primary)] transition-all duration-200 shadow-[0_0_8px_rgba(0,255,149,0.1)] group-hover:shadow-[0_0_16px_rgba(0,255,149,0.2)]">
                   <Image
                     src="/logo.png"
                     alt="Gangstr"
-                    width={32}
-                    height={32}
+                    width={28}
+                    height={28}
                     className=""
                   />
                 </div>
-                <span className="text-2xl font-bold text-black">Gangstr</span>
+                <div className="flex flex-col">
+                  <span className="text-3xl font-black font-display tracking-tight leading-none">
+                    <span className="gradient-glow-text">
+                      GANGS
+                    </span>
+                    <span className="text-[var(--color-text-primary)] ml-1">TR</span>
+                  </span>
+                  <span className="text-[9px] text-[var(--color-text-tertiary)] uppercase tracking-[0.2em] font-mono mt-0.5 opacity-70">
+                    FINANCIAL TERMINAL
+                  </span>
+                </div>
               </a>
               <button
                 onClick={onClose}
-                className="lg:hidden text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100 transition-all duration-200"
+                className="lg:hidden text-[var(--color-text-tertiary)] hover:text-[var(--color-accent-primary)] p-2 rounded-lg hover:bg-[var(--color-bg-highlight)] transition-all duration-200"
                 aria-label="Close sidebar"
               >
                 <X size={18} />
@@ -85,11 +95,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                   href={item.href}
                   onClick={onClose}
                   className={`
-                    flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group relative
+                    flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group relative
                     ${
                       isActive
-                        ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-md"
-                        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                        ? "bg-[var(--color-accent-primary)] text-[var(--color-bg-primary)] shadow-[0_0_12px_rgba(0,255,149,0.2)]"
+                        : "text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-highlight)] hover:text-[var(--color-accent-primary)]"
                     }
                   `}
                 >
@@ -99,22 +109,22 @@ const Sidebar: React.FC<SidebarProps> = ({
                       transition-all duration-200 flex-shrink-0
                       ${
                         isActive
-                          ? "text-white"
-                          : "text-gray-500 group-hover:text-primary-600"
+                          ? "text-[var(--color-accent-primary)]"
+                          : "text-[var(--color-text-tertiary)] group-hover:text-[var(--color-accent-primary)]"
                       }
                     `}
                   />
                   <span
-                    className={`font-medium text-sm ${
+                    className={`font-semibold text-sm uppercase tracking-wider ${
                       isActive
-                        ? "text-white"
-                        : "text-gray-700 group-hover:text-gray-900"
+                        ? "text-[var(--color-bg-primary)]"
+                        : "text-[var(--color-text-secondary)] group-hover:text-[var(--color-accent-primary)]"
                     }`}
                   >
                     {item.label}
                   </span>
                   {isActive && (
-                    <div className="absolute right-3 w-1.5 h-1.5 bg-white rounded-full" />
+                    <div className="absolute right-3 w-1.5 h-1.5 bg-[var(--color-bg-primary)] rounded-full" />
                   )}
                 </Link>
               );
@@ -124,9 +134,9 @@ const Sidebar: React.FC<SidebarProps> = ({
           {/* Mode selector removed for Pro-only experience */}
 
           {/* Footer */}
-          <div className="px-4 py-4 border-t border-gray-200">
+          <div className="px-4 py-4 border-t border-[var(--color-border)]">
             <div className="text-center mb-3">
-              <p className="text-xs text-gray-500 font-medium">
+              <p className="text-xs text-[var(--color-text-tertiary)] font-medium uppercase tracking-wider">
                 Connect with us
               </p>
             </div>
@@ -135,7 +145,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 href="https://t.me/gangstrxyz"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 rounded-xl group"
+                className="p-2.5 text-[var(--color-text-tertiary)] hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-highlight)] transition-all duration-200 rounded-xl group"
                 title="Join our Telegram"
               >
                 <svg
@@ -152,7 +162,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 href="https://x.com/gangstrxyz"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 rounded-xl group"
+                className="p-2.5 text-[var(--color-text-tertiary)] hover:text-[var(--color-accent-primary)] hover:bg-[var(--color-bg-highlight)] transition-all duration-200 rounded-xl group"
                 title="Follow us on X"
               >
                 <svg
@@ -167,7 +177,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               </a>
             </div>
             <div className="mt-3 text-center">
-              <p className="text-xs text-gray-400">© 2025 Gangstr</p>
+              <p className="text-xs text-[var(--color-text-tertiary)] font-mono">© 2025 GANGSTR</p>
             </div>
           </div>
         </div>
