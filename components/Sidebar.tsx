@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { MessageSquare, Settings, X, Home, TrendingUp, PieChart, Search, HelpCircle } from "lucide-react";
+import { MessageSquare, X, Home, TrendingUp, PieChart } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 interface SidebarProps {
@@ -18,10 +18,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     { href: "/dashboard", icon: Home, label: "Dashboard" },
     { href: "/discover", icon: TrendingUp, label: "Discover" },
     { href: "/agent/chat", icon: MessageSquare, label: "Agent Chat" },
-    { href: "/portfolio", icon: PieChart, label: "Portfolio" },
-    { href: "/research", icon: Search, label: "Research" },
-    { href: "/settings", icon: Settings, label: "Settings" },
-    { href: "/support", icon: HelpCircle, label: "Support" },
+    { href: "/portfolio", icon: PieChart, label: "Portfolio" }, 
   ];
 
   return (
@@ -175,9 +172,6 @@ const Sidebar: React.FC<SidebarProps> = ({
                   <path d="M18.244 2H21l-6.6 7.56L22 22h-6.844l-5.18-6.95L5.5 22H2l7.2-8.15L2.5 2h6.844l4.72 6.33L18.244 2zm-2.05 18h1.25L7.9 4H6.65l9.544 16z" />
                 </svg>
               </a>
-            </div>
-            <div className="mt-3 text-center">
-              <p className="text-xs text-[var(--color-text-tertiary)] font-mono">© 2025 GANGSTR</p>
             </div>
           </div>
         </div>
