@@ -1,8 +1,9 @@
+import { type RefObject } from "react"
 import { ACTION_PROMPTS } from "../constants/prompts"
 
 interface ActionsPopupProps {
 	isOpen: boolean
-	popupRef: React.RefObject<HTMLDivElement>
+	popupRef: RefObject<HTMLDivElement>
 	onActionClick: (prompt: string) => void
 }
 
@@ -21,6 +22,7 @@ export const ActionsPopup = ({
 			<div className="p-2">
 				{ACTION_PROMPTS.map((action) => (
 					<button
+						type="button"
 						key={action.id}
 						onClick={() => onActionClick(action.prompt)}
 						className="w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-muted rounded-md transition-colors text-sm"

@@ -16,6 +16,7 @@ interface ChatInputProps {
   isLoading: boolean;
   showActionsPopup: boolean;
   actionsPopupRef: RefObject<HTMLDivElement>;
+  inputRef?: RefObject<HTMLInputElement>;
   onActionsToggle: () => void;
   onActionClick: (prompt: string) => void;
 }
@@ -28,6 +29,7 @@ export const ChatInput = ({
   isLoading,
   showActionsPopup,
   actionsPopupRef,
+  inputRef,
   onActionsToggle,
   onActionClick,
 }: ChatInputProps) => {
@@ -85,6 +87,7 @@ export const ChatInput = ({
 
           <div className="flex-1 relative">
             <input
+              ref={inputRef}
               type="text"
               className="flex-1 w-full bg-background border border-border text-foreground px-3 sm:px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent shadow-inner transition-all text-sm"
               value={input}
@@ -92,6 +95,7 @@ export const ChatInput = ({
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               disabled={isLoading}
+              aria-label={placeholder}
             />
             {!input.trim() && !isFocused && animatedText && (
               <div
