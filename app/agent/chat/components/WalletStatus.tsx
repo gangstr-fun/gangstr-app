@@ -7,6 +7,17 @@ interface WalletStatusProps {
 	agentWalletAddress: string | null
 }
 
+/**
+ * Masks a wallet address by showing first 6 and last 4 characters.
+ * Returns the original address if it's too short to mask safely.
+ */
+const maskWalletAddress = (address: string): string => {
+	if (!address || address.length < 10) {
+		return address
+	}
+	return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`
+}
+
 export const WalletStatus = ({
 	walletAddress,
 	agentWalletStatus,
@@ -19,10 +30,7 @@ export const WalletStatus = ({
 			<div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
 				<div className="flex items-center gap-2">
 					<Wallet className="h-3 w-3 text-green-500" />
-					<span>
-						User wallet: {walletAddress.substring(0, 6)}...
-						{walletAddress.substring(walletAddress.length - 4)}
-					</span>
+					<span>User wallet: {maskWalletAddress(walletAddress)}</span>
 				</div>
 
 				<div className="flex items-center gap-2">
@@ -43,10 +51,7 @@ export const WalletStatus = ({
 								height={12}
 							/>
 							<span className="text-green-600">
-								Agent wallet: {agentWalletAddress.substring(0, 6)}...
-								{agentWalletAddress.substring(
-									agentWalletAddress.length - 4
-								)}
+								Agent wallet: {maskWalletAddress(agentWalletAddress)}
 							</span>
 						</>
 					)}

@@ -104,12 +104,25 @@ export const sendChatMessage = async (
 	console.log("[CHAT] API response status:", response.status)
 
 	if (!response.ok) {
-		const errorData = await response.json()
+		let errorData: { error?: string } = {}
+		try {
+			errorData = await response.json()
+		} catch (parseError) {
+			console.error("[CHAT] Failed to parse error response:", parseError)
+			errorData = { error: `HTTP ${response.status}: ${response.statusText}` }
+		}
 		console.error("[CHAT] API error response:", errorData)
 		throw formatApiError(response.status, errorData)
 	}
 
-	const data = await response.json()
+	let data: ChatApiResponse
+	try {
+		data = await response.json()
+	} catch (parseError) {
+		console.error("[CHAT] Failed to parse success response:", parseError)
+		throw new Error("Invalid response format from server")
+	}
+
 	console.log("[CHAT] API response data:", data)
 	return data
 }
@@ -179,13 +192,16 @@ Sorry, there was an error communicating with the agent.
 **Solution:** Please try refreshing the page and try again.`
 }
 
+let messageIdCounter = 0
+
 export const createMessage = (
 	content: string,
 	sender: "user" | "agent",
 	agentType?: string
 ): Message => {
+	messageIdCounter++
 	return {
-		id: Date.now().toString(),
+		id: `${Date.now()}-${messageIdCounter}-${Math.random().toString(36).substring(2, 9)}`,
 		content,
 		sender,
 		timestamp: new Date(),
