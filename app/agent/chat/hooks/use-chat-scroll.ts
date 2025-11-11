@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import type { Message } from "../types/chat"
 
 export const useChatScroll = (
@@ -9,17 +9,17 @@ export const useChatScroll = (
 	const chatContainerRef = useRef<HTMLDivElement>(null)
 	const messagesEndRef = useRef<HTMLDivElement>(null)
 
-	const scrollToBottom = () => {
+	const scrollToBottom = useCallback(() => {
 		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-	}
+	}, [])
 
-	const handleScroll = () => {
+	const handleScroll = useCallback(() => {
 		if (!chatContainerRef.current) return
 
 		const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current
 		const isNotAtBottom = scrollHeight - scrollTop - clientHeight > 100
 		setShowScrollToBottom(isNotAtBottom)
-	}
+	}, [])
 
 	useEffect(() => {
 		scrollToBottom()
@@ -31,7 +31,7 @@ export const useChatScroll = (
 				chatContainer.removeEventListener("scroll", handleScroll)
 			}
 		}
-	}, [messages, activeMode])
+	}, [messages, activeMode, scrollToBottom, handleScroll])
 
 	return {
 		showScrollToBottom,

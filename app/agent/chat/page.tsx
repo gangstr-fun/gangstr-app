@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, type FormEvent } from "react";
+import { useState, useEffect, useRef, type FormEvent } from "react";
 import { usePrivyWallet } from "@/lib/hooks/usePrivyWallet";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useChatMessages } from "./hooks/use-chat-messages";
@@ -34,6 +34,7 @@ const AgentChatPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [automationInput, setAutomationInput] = useState("");
   const [researchInput, setResearchInput] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const {
     messages,
@@ -63,10 +64,7 @@ const AgentChatPage = () => {
       setResearchInput(prompt);
     }
     setTimeout(() => {
-      const input = document.querySelector(
-        'input[type="text"]'
-      ) as HTMLInputElement;
-      input?.focus();
+      inputRef.current?.focus();
     }, 100);
   };
 
@@ -78,10 +76,7 @@ const AgentChatPage = () => {
     }
     setShowActionsPopup(false);
     setTimeout(() => {
-      const input = document.querySelector(
-        'input[type="text"]'
-      ) as HTMLInputElement;
-      input?.focus();
+      inputRef.current?.focus();
     }, 100);
   };
 
@@ -161,7 +156,6 @@ const AgentChatPage = () => {
             "research"
           );
           setResearchMessages((prev) => [...prev, researchResponse]);
-          setIsLoading(false);
         }, 1500);
         return;
       }
@@ -181,9 +175,7 @@ const AgentChatPage = () => {
         setResearchMessages((prev) => [...prev, errorMessage]);
       }
     } finally {
-      if (activeMode === "automation") {
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     }
   };
 
@@ -234,6 +226,7 @@ const AgentChatPage = () => {
         isLoading={isLoading}
         showActionsPopup={showActionsPopup}
         actionsPopupRef={actionsPopupRef}
+        inputRef={inputRef}
         onActionsToggle={() => setShowActionsPopup(!showActionsPopup)}
         onActionClick={handleActionPromptClick}
       />
