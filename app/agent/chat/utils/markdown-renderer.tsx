@@ -23,7 +23,7 @@ const processCodeBlocks = (text: string): React.ReactNode[] => {
 	let lastIndex = 0
 	let key = 0
 
-	const codeRegex = /`([^`]+)`/g
+	const codeRegex = /`([^`]*)`/g
 	let codeMatch
 
 	while ((codeMatch = codeRegex.exec(text)) !== null) {
@@ -68,7 +68,7 @@ const processInlineMarkdown = (text: string): React.ReactNode[] => {
 	let lastIndex = 0
 	let key = 0
 
-	const boldRegex = /\*\*([^*]+)\*\*/g
+	const boldRegex = /\*\*([^*]*)\*\*/g
 	let boldMatch
 
 	while ((boldMatch = boldRegex.exec(text)) !== null) {
